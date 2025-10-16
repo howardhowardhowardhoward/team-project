@@ -64,4 +64,4 @@ By signing below, we acknowledge that we have read, discussed, and agreed to the
 
 Team Member Signatures:
 
-(type names here)
+Howard Zhang, Eden Xiang, Gopal Subedi. Johnson Qin, Ryan Zhang, Yuxi Cheng
