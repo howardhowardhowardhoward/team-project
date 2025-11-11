@@ -1,8 +1,5 @@
 package entities;
-
-import java.io.IOException;
 import java.util.*;
-import frameworks_and_drivers.DeckApiService;
 
 public class Deck {
     private Stack<Card> cards = new Stack<>();
@@ -19,5 +16,10 @@ public class Deck {
     /** Draw a single card */
     public Card drawCard() {
         return deckProvider.drawCard();
+    }
+
+    /** Draw multiple cards */
+    public List<Card> drawCards(int count) {
+        return deckProvider.drawCards(count);
     }
 }
