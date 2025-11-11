@@ -1,12 +1,13 @@
 package frameworks_and_drivers;
 
 import entities.Card;
+import entities.DeckProvider;
 import okhttp3.*;
 import org.json.*;
 
 import java.io.IOException;
 
-public class DeckApiService {
+public class DeckApiService implements DeckProvider {
     private final String API_URL = "https://deckofcardsapi.com/api/deck";
     private final OkHttpClient client = new OkHttpClient();
     String deckId;
@@ -21,6 +22,7 @@ public class DeckApiService {
         deckId = json.getString("deck_id");
     }
 
+    @Override
     public void shuffleDeck() {
         try {
             Request request = new Request.Builder()
@@ -32,6 +34,7 @@ public class DeckApiService {
         }
     }
 
+    @Override
     public Card drawCard() {
         try {
             Request request = new Request.Builder()
@@ -49,8 +52,6 @@ public class DeckApiService {
             String image = cardJson.getString("image");
 
             return new Card(code, suit, image, valueInt);
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
