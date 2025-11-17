@@ -61,4 +61,14 @@ public class Player {
         }
         return null;
     }
+
+    public void placeBet(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than 0.");
+        }
+        if (amount > balance) {
+            throw new IllegalArgumentException("Not enough balance.");
+        }
+        this.balance -= amount;
+    }
 }
