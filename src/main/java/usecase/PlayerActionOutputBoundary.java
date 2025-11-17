@@ -1,4 +1,4 @@
-package use_case.playeraction;
+package usecase;
 
 public interface PlayerActionOutputBoundary {
     void present(PlayerActionOutputData outputData);

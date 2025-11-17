@@ -1,4 +1,4 @@
-package use_case.playeraction;
+package usecase;
 
 public interface GameDataAccess {
 
