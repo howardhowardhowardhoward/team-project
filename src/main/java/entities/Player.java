@@ -5,12 +5,12 @@ import java.util.List;
 
 public class Player {
     private double balance;
-    private final List<Hand> hands;
+    private Hand hand;
 
 
-    public Player(String playerId, String username, double initialBalance) {
+    public Player(double initialBalance) {
         this.balance = initialBalance;
-        this.hands = new ArrayList<>();
+        this.hand = new Hand();
     }
 
 
@@ -18,27 +18,16 @@ public class Player {
         this.balance += amount;
     }
 
-    public void addHand(Hand hand) {
-        this.hands.add(hand);
-    }
-
     public void clearHands() {
-        this.hands.clear();
+        this.hand.clear();
     }
 
     public double getBalance() {
         return balance;
     }
 
-    public List<Hand> getHands() {
-        return hands;
-    }
-
-    public Hand getHand(int index) {
-        if (index >= 0 && index < hands.size()) {
-            return hands.get(index);
-        }
-        return null;
+    public Hand getHand() {
+        return hand;
     }
 
     public void placeBet(double amount) {
@@ -49,5 +38,9 @@ public class Player {
             throw new IllegalArgumentException("Not enough balance.");
         }
         this.balance -= amount;
+    }
+
+    public boolean isBlackjack(){
+        return this.hand.isBlackjack();
     }
 }

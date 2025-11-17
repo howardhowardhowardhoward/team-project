@@ -1,29 +1,32 @@
 package entities;
 
+import frameworks_and_drivers.DeckApiService;
+import java.util.List;
+
 public class Game {
     private Player player;
-    private Player dealer;  // we can reuse Player as dealer, or create Dealer class
-    private String deckId;
+    private Dealer dealer;
+    private Deck gameDeck;
+    private List<Card> playerCard;
+    private List<Card> dealerCard;
     private int balance;
     private int currentBet;
     private boolean roundActive;
 
     public Game() {
-        this.player = new Player();
-        this.dealer = new Player(); // Dealer also has a Hand
+        DeckApiService deckApiService = new DeckApiService();
+        this.gameDeck = new Deck(deckApiService);
+        this.player = new Player(1000);
+        this.dealer = new Dealer(gameDeck); // Dealer also has a Hand
         this.balance = 1000; // starting balance
         this.roundActive = false;
     }
-
-    // ============================
-    //          GETTERS
-    // ============================
 
     public Player getPlayer() {
         return player;
     }
 
-    public Player getDealer() {
+    public Dealer getDealer() {
         return dealer;
     }
 
@@ -37,18 +40,6 @@ public class Game {
 
     public boolean isRoundActive() {
         return roundActive;
-    }
-
-    public String getDeckId() {
-        return deckId;
-    }
-
-    // ============================
-    //          SETTERS
-    // ============================
-
-    public void setDeckId(String deckId) {
-        this.deckId = deckId;
     }
 
     public void setBalance(int balance) {
@@ -69,18 +60,15 @@ public class Game {
 
     /** Reset the table for a new round */
     public void reset() {
-        player.clearHand();
-        dealer.clearHand();
+        player.clearHands();
         currentBet = 0;
         roundActive = true;
     }
 
-    /** Add winnings to the balance */
     public void applyWinnings(int amount) {
         balance += amount;
     }
 
-    /** Deduct the bet from the balance */
     public boolean placeBet(int amount) {
         if (amount > balance || amount <= 0) {
             return false;
@@ -94,17 +82,9 @@ public class Game {
     //       BLACKJACK CHECKS
     // ============================
 
-    public boolean isPlayerBlackjack() {
-        return player.getHand().isBlackjack();
-    }
-
-    public boolean isDealerBlackjack() {
-        return dealer.getHand().isBlackjack();
-    }
-
     /** Check initial blackjack case for player or dealer */
     public boolean checkInitialBlackjack() {
-        return isPlayerBlackjack() || isDealerBlackjack();
+        return player.isBlackjack() || dealer.isBlackJack();
     }
 
 }
