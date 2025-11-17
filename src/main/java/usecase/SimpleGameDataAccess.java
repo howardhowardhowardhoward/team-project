@@ -1,4 +1,4 @@
-package use_case.playeraction;
+package usecase;
 
 import entities.*;
 import java.util.HashMap;

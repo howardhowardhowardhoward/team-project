@@ -1,4 +1,4 @@
-package use_case.playeraction;
+package usecase;
 
 import java.util.List;
 

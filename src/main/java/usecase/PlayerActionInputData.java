@@ -1,4 +1,4 @@
-package use_case.playeraction;
+package usecase;
 
 /**
  * Input data for player actions in Blackjack.
