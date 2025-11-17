@@ -1,7 +1,8 @@
-package usecase;
+package usecase.PlaceBetAndDeal;
 
 import entities.*;
 import frameworks_and_drivers.DeckApiService;
+
 import java.util.Scanner;
 
 public class PlaceBetAndDealTest {
