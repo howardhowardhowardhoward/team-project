@@ -16,8 +16,9 @@ public class StartGameInteractor implements StartGameInputBoundary {
                                DeckApiService deckService,
                                Game game) {
 
+        DeckApiService deckApiService = new DeckApiService();
         this.presenter = presenter;
-        this.gameDeck = new Deck();
+        this.gameDeck = new Deck(deckApiService);
         this.game = game;
     }
 
@@ -34,13 +35,18 @@ public class StartGameInteractor implements StartGameInputBoundary {
             List<Card> playerCards = gameDeck.drawCards(2);
             List<Card> dealerCards = gameDeck.drawCards(2);
 
-            Hand
-            game.getDealer().setHandCards(dealerCards);
+            Hand playerhand = new Hand();
+            Hand dealerhand = new Hand();
 
-            int playerTotal = game.getPlayer().getHand().getTotalPoints();
-            int dealerVisibleTotal = game.getDealer().getHand().getCard(0).getValue();
+            for (int i = 0; i <= 1; i++){
+                playerhand.addCard(playerCards.get(i));
+                dealerhand.addCard(dealerCards.get(i));
+            }
 
-            boolean blackjack = game.checkInitialBlackjack();
+            int playerTotal = playerhand.getTotalPoints();
+            int dealerVisibleTotal = dealerhand.getCards().get(0).getValue();
+
+            boolean playerBlackjack = (playerTotal == 21);
 
             // 4. Prepare output
             StartGameOutputData outputData = new StartGameOutputData(
@@ -48,12 +54,12 @@ public class StartGameInteractor implements StartGameInputBoundary {
                     dealerCards,
                     playerTotal,
                     dealerVisibleTotal,
-                    blackjack
+                    playerBlackjack
             );
 
             presenter.present(outputData);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Optional: send error output to presenter
             e.printStackTrace();
         }
