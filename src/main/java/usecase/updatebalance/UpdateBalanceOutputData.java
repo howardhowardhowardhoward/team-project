@@ -1,14 +1,13 @@
 package usecase.updatebalance;
 
 public class UpdateBalanceOutputData {
-    private final String username;
     private final double newBalance;
 
-    public UpdateBalanceOutputData(String username, double newBalance) {
-        this.username = username;
+    public UpdateBalanceOutputData(double newBalance) {
         this.newBalance = newBalance;
     }
 
-    public String getUsername() { return username; }
-    public double getNewBalance() { return newBalance; }
+    public double getNewBalance() {
+        return newBalance;
+    }
 }
