@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 /**
  * Interface for updating player balance.
