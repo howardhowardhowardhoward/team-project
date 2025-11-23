@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 /**
  * Input data for player actions in Blackjack.

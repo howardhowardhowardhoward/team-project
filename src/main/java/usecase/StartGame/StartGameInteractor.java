@@ -15,10 +15,10 @@ public class StartGameInteractor implements StartGameInputBoundary {
     public StartGameInteractor(StartGameOutputBoundary presenter,
                                DeckApiService deckService,
                                Game game) {
-
-        DeckApiService deckApiService = new DeckApiService();
+        // FIXED: Use injected deckService instead of creating new instance
+        // This follows Dependency Injection principle and allows for testing with mocks
         this.presenter = presenter;
-        this.gameDeck = new Deck(deckApiService);
+        this.gameDeck = new Deck(deckService);  // Use injected dependency
         this.game = game;
     }
 

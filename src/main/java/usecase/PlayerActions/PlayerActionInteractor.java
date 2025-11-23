@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 import entities.*;
 import usecase.dealeraction.DealerController;
@@ -296,6 +296,8 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             return;
         }
 
+        gameDataAccess.setBetAmount(inputData.getHandIndex(), originalBet * 2);
+
         // Draw exactly one card
         Card newCard = gameDataAccess.drawCard();
         hand.addCard(newCard);
@@ -336,6 +338,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
      */
     private void executeSplit(PlayerActionInputData inputData) {
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
+        // FIXED: Removed early return that prevented SPLIT functionality
         Hand hand = player.getHand(inputData.getHandIndex());
 
         // Validation: Can only split pairs
@@ -451,13 +454,15 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
         if (dealerBlackjack) {
             // Insurance wins 2:1
-            double payout = insuranceBet * 2.0;
+            double payout = insuranceBet * 3.0;
             if (balanceUpdater != null) {
                 balanceUpdater.addBalance(inputData.getPlayerId(), payout, "INSURANCE_WIN");
             } else {
                 player.adjustBalance(payout);
             }
-            message = String.format("Insurance wins! Dealer has Blackjack. Won $%.2f", payout);
+            message = String.format("Insurance wins! Dealer has Blackjack. Won $%.2f", payout - insuranceBet);
+            message += "\nDealer has Blackjack - Round ends.";
+            gameDataAccess.setGameState("ROUND_COMPLETE");
         } else {
             message = String.format("Insurance loses. Dealer does not have Blackjack. Lost $%.2f", insuranceBet);
         }
@@ -468,7 +473,8 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
                 player.getHand(inputData.getHandIndex()).getTotalPoints(),
                 false,
                 false,
-                getAvailableActions(player.getHand(inputData.getHandIndex()), player, inputData.getHandIndex())
+                dealerBlackjack ? new ArrayList<>() : getAvailableActions(player.getHand(inputData.getHandIndex()),
+                        player, inputData.getHandIndex())
         );
 
         outputBoundary.present(output);
