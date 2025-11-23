@@ -1,7 +1,6 @@
 package usecase.StartGame;
 
 import entities.*;
-import frameworks_and_drivers.DeckApiService;
 import usecase.DeckProvider;
 
 import java.io.IOException;
@@ -24,45 +23,60 @@ public class StartGameInteractor implements StartGameInputBoundary {
     }
 
     @Override
-    public void execute(StartGameInputData inputData) {
-        try {
-            // 1. Reset game state
-            game.reset();
+    public void execute(StartGameInputData inputData)  {
+        double bet = inputData.getBetAmount();
 
-            // 2. Shuffle or request a new deck
-            gameDeck.shuffle();
+        // validate bet
+        if (bet <= 0) {
+            presenter.presentBetError("Bet must be greater than 0.");
+            return;
+        }
+        if (bet > game.getBalance()) {
+            presenter.presentBetError("Not enough balance to place this bet.");
+            return;
+        }
 
-            // 3. Deal initial cards (2 player, 2 dealer)
-            List<Card> playerCards = gameDeck.drawCards(2);
-            List<Card> dealerCards = gameDeck.drawCards(2);
+        // deduct the bet
+        // 2. Deduct bet
+        game.setBalance((int) (game.getBalance() - bet));
+        game.setCurrentBet((int) bet);
 
-            Hand playerhand = new Hand();
-            Hand dealerhand = new Hand();
+        // 1. Reset game state
+        game.reset();
 
-            for (int i = 0; i <= 1; i++){
-                playerhand.addCard(playerCards.get(i));
-                dealerhand.addCard(dealerCards.get(i));
-            }
+        // 2. Shuffle or request a new deck
+        gameDeck.shuffle();
 
-            int playerTotal = playerhand.getTotalPoints();
-            int dealerVisibleTotal = dealerhand.getCards().get(0).getValue();
+        // 3. Deal initial cards (2 player, 2 dealer)
+        List<Card> playerCards = gameDeck.drawCards(2);
+        List<Card> dealerCards = gameDeck.drawCards(2);
 
-            boolean playerBlackjack = (playerTotal == 21);
+        Hand playerhand = new Hand();
+        Hand dealerhand = new Hand();
 
-            // 4. Prepare output
-            StartGameOutputData outputData = new StartGameOutputData(
-                    playerCards,
-                    dealerCards,
-                    playerTotal,
-                    dealerVisibleTotal,
-                    playerBlackjack
-            );
+        for (int i = 0; i <= 1; i++){
+            playerhand.addCard(playerCards.get(i));
+            dealerhand.addCard(dealerCards.get(i));
+        }
+
+        int playerTotal = playerhand.getTotalPoints();
+        int dealerTotal = dealerhand.getTotalPoints();
+        int dealerVisibleTotal = dealerhand.getCards().get(0).getValue();
+
+        boolean playerBlackjack = (playerTotal == 21);
+        boolean dealerBlackjack = (dealerTotal == 21);
+
+        // 4. Prepare output
+        StartGameOutputData outputData = new StartGameOutputData(
+                playerCards,
+                dealerCards,
+                playerTotal,
+                dealerVisibleTotal,
+                dealerBlackjack,
+                playerBlackjack
+                );
 
             presenter.present(outputData);
 
-        } catch (Exception e) {
-            // Optional: send error output to presenter
-            e.printStackTrace();
         }
-    }
 }
