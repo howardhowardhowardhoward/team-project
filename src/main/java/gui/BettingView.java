@@ -1,4 +1,4 @@
-package gui.view;
+package gui;
 
 import interface_adapter.update_balance.UpdateBalanceController;
 
