@@ -1,7 +1,7 @@
 package usecase.PlayerActions;
 
 import entities.*;
-import usecase.DealerAction.DealerController;
+import usecase.DealerAction.DealerActionController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,13 +12,13 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
     private final PlayerActionOutputBoundary outputBoundary;
     private final GameDataAccess gameDataAccess;
     private final BalanceUpdater balanceUpdater;
-    private final DealerController dealerController;
+    private final DealerActionController dealerController;
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
             GameDataAccess gameDataAccess,
             BalanceUpdater balanceUpdater,
-            DealerController dealerController) {
+            DealerActionController dealerController) {
         this.outputBoundary = outputBoundary;
         this.gameDataAccess = gameDataAccess;
         this.balanceUpdater = balanceUpdater;
