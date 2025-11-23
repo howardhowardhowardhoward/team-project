@@ -9,7 +9,6 @@ public class Dealer {
 
     public void draw(Card card) {
         this.hand.addCard(card);
-        // SIMPLIFIED: Removed manual score tracking, use hand.getTotalPoints() instead
     }
 
     public int GetDealerScore() {

@@ -4,6 +4,7 @@ import entities.Card;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
+import usecase.DeckProvider;
 
 import java.util.ArrayList;
 import java.util.List;

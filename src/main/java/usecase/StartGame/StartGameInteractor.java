@@ -2,6 +2,7 @@ package usecase.StartGame;
 
 import entities.*;
 import frameworks_and_drivers.DeckApiService;
+import usecase.DeckProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,16 +10,16 @@ import java.util.List;
 public class StartGameInteractor implements StartGameInputBoundary {
 
     private final StartGameOutputBoundary presenter;
-    private final Deck gameDeck;
+    private final DeckProvider gameDeck;
     private final Game game;
 
     public StartGameInteractor(StartGameOutputBoundary presenter,
-                               DeckApiService deckService,
+                               DeckProvider deckProvider,
                                Game game) {
         // FIXED: Use injected deckService instead of creating new instance
         // This follows Dependency Injection principle and allows for testing with mocks
         this.presenter = presenter;
-        this.gameDeck = new Deck(deckService);  // Use injected dependency
+        this.gameDeck = deckProvider;
         this.game = game;
     }
 

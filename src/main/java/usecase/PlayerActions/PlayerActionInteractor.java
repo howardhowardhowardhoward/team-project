@@ -1,7 +1,7 @@
 package usecase.PlayerActions;
 
 import entities.*;
-import usecase.dealeraction.DealerController;
+import usecase.DealerAction.DealerController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
