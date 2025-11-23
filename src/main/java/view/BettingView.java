@@ -54,7 +54,6 @@ public class BettingView extends JFrame {
         createChipButton(chipsPanel, 100);
         this.add(chipsPanel);
 
-        // --- 5. DEAL 按钮 ---
         JPanel buttonPanel = new JPanel();
         JButton dealButton = new JButton("DEAL");
         dealButton.setFont(new Font("Arial", Font.BOLD, 16));
