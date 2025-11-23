@@ -2,6 +2,7 @@ package usecase.PlayerActions;
 
 import entities.Card;
 import entities.Player;
+import entities.Dealer;
 
 public interface GameDataAccess {
 
