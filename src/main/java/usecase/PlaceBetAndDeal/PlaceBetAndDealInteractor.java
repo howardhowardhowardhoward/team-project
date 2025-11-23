@@ -1,36 +1,64 @@
 package usecase.PlaceBetAndDeal;
 
 import entities.*;
+import frameworks_and_drivers.DeckProvider; // 新增：导入正确的接口
+import frameworks_and_drivers.Deck; // 可能需要，视具体实现而定
 
-public class PlaceBetAndDealInteractor {
-    private Deck deck;
-    private Player player;
-    private Dealer dealer;
+import java.util.List;
 
-    public PlaceBetAndDealInteractor(Deck deck, Player player, Dealer dealer) {
+public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
+    private final DeckProvider deck;
+    private final Player player;
+    private final Dealer dealer;
+    private final PlaceBetAndDealOutputBoundary presenter;
+
+    public PlaceBetAndDealInteractor(DeckProvider deck, Player player, Dealer dealer,
+                                     PlaceBetAndDealOutputBoundary presenter) {
         this.deck = deck;
         this.player = player;
         this.dealer = dealer;
+        this.presenter = presenter;
     }
 
-    public Bet execute(double betAmount) {
-        player.placeBet(betAmount);
-        Bet bet = new Bet(betAmount, BetType.MAIN);
+    @Override
+    public void execute(PlaceBetAndDealInputData inputData) {
+        try {
+            double balance = player.getBalance();
+            double betAmount = inputData.getBetAmount();
+            boolean playerBlackjack = player.isBlackjack();
 
-        // clear hands for new round
-        player.clearHands();
-        dealer.getHand().clear();
-        Hand playerHand = new Hand();
-        Hand dealerHand = dealer.getHand();
+            // Place bet
+            player.placeBet(betAmount);
+            Bet bet = new Bet(betAmount, BetType.MAIN);
 
-        // dealing cards
-        playerHand.addCard(deck.drawCard());
-        playerHand.addCard(deck.drawCard());
-        dealerHand.addCard(deck.drawCard()); // should be face down
-        dealerHand.addCard(deck.drawCard()); // should be face up
+            // Reset hands
+            player.clearHands();
+            dealer.getHand().clear();
 
-        player.addHand(playerHand);
+            // Draw cards
+            List<Card> playerCards = deck.drawCards(2);
+            List<Card> dealerCards = deck.drawCards(2);
 
-        return bet;
+            Hand playerHand = player.getHand1(); //
+            Hand dealerHand = dealer.getHand();
+
+            playerHand.addCard(playerCards.get(0));
+            playerHand.addCard(playerCards.get(1));
+            dealerHand.addCard(dealerCards.get(0)); // visible
+            dealerHand.addCard(dealerCards.get(1)); // hidden
+
+            int playerTotal = playerHand.getTotalPoints();
+            int dealerVisibleTotal = dealerCards.get(0).getValue();
+
+            // Output
+            PlaceBetAndDealOutputData outputData = new PlaceBetAndDealOutputData(
+                    bet, playerCards, dealerCards, playerTotal, dealerVisibleTotal,
+                    balance, betAmount, playerBlackjack
+            );
+
+            presenter.present(outputData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

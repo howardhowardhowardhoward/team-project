@@ -41,5 +41,3 @@ import java.util.List;
             return blackjack;
         }
     }
-
-}

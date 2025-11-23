@@ -1,4 +1,4 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 /**
  * Input data for Exit or Restart Game use case
