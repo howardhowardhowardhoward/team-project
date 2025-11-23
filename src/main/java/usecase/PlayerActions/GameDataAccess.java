@@ -1,7 +1,6 @@
 package usecase.PlayerActions;
 
-import entities.Card;
-import entities.Player;
+import entities.*;
 
 public interface GameDataAccess {
 
