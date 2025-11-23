@@ -1,6 +1,7 @@
 package usecase.PlayerActions;
 
 import entities.*;
+import frameworks_and_drivers.DeckApiService;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,8 +70,11 @@ public class SimpleGameDataAccess implements GameDataAccess {
 
     @Override
     public boolean allHandsComplete() {
-        for (int i = 0; i < player.getHands().size(); i++) {
-            if (!isHandComplete(i)) {
+        if (!isHandComplete(0)) {
+            return false;
+        }
+        if (player.hasSplit()) {
+            if (!isHandComplete(1)) {
                 return false;
             }
         }
