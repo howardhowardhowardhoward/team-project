@@ -1,14 +1,12 @@
 package entities;
 
 import frameworks_and_drivers.DeckApiService;
-import java.util.List;
+
 
 public class Game {
     private Player player;
     private Dealer dealer;
     private Deck gameDeck;
-    private List<Card> playerCard;
-    private List<Card> dealerCard;
     private int balance;
     private int currentBet;
     private boolean roundActive;
@@ -54,6 +52,7 @@ public class Game {
         this.roundActive = active;
     }
 
+
     // ============================
     //       GAME MANAGEMENT
     // ============================
@@ -84,8 +83,8 @@ public class Game {
 
     /** Check initial blackjack case for player or dealer */
     public boolean checkInitialBlackjack() {
-        return player.isBlackjack() || dealer.isBlackJack();
+        return player.isBlackjack();
     }
 
 }
-}
+
