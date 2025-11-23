@@ -1,10 +1,10 @@
 package frameworks_and_drivers;
-import Deck;
+import usecase.DeckProvider;
 
 public class DeckTest {
     public static void main(String[] args) {
         DeckApiService deckApiService = new DeckApiService();
-        Deck deck = new Deck(deckApiService);
+        DeckProvider deck = DeckProvider();
 
         for (int i = 0; i < 52; i++) {
             System.out.println(deck.drawCard());

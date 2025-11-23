@@ -5,21 +5,14 @@ import frameworks_and_drivers.DeckApiService;
 public class Game {
     private Player player;
     private Dealer dealer;
-    private Deck gameDeck;
     private int balance;
     private int currentBet;
     private boolean roundActive;
 
-    // Default constructor - creates new DeckApiService (backward compatibility)
-    public Game() {
-        this(new DeckApiService());
-    }
-
     // IMPROVED: Constructor with dependency injection for better testability
-    public Game(DeckProvider deckProvider) {
-        this.gameDeck = new Deck(deckProvider);
+    public Game() {
         this.player = new Player(1000);
-        this.dealer = new Dealer(gameDeck);
+        this.dealer = new Dealer();
         this.balance = 1000; // starting balance
         this.roundActive = false;
     }
