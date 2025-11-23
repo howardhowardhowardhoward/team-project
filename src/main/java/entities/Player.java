@@ -45,6 +45,8 @@ public class Player {
         this.balance -= amount;
     }
 
+
+
     public boolean hasSplit(){
         return this.hand2 != null;
     }
