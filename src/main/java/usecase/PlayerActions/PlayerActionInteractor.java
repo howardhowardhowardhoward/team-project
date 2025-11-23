@@ -11,25 +11,14 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     private final PlayerActionOutputBoundary outputBoundary;
     private final GameDataAccess gameDataAccess;
-    private final BalanceUpdater balanceUpdater;
-    private final DealerController dealerController;
-
-    public PlayerActionInteractor(
-            PlayerActionOutputBoundary outputBoundary,
-            GameDataAccess gameDataAccess,
-            BalanceUpdater balanceUpdater,
-            DealerController dealerController) {
-        this.outputBoundary = outputBoundary;
-        this.gameDataAccess = gameDataAccess;
-        this.balanceUpdater = balanceUpdater;
-        this.dealerController = dealerController;
-    }
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
             GameDataAccess gameDataAccess) {
-        this(outputBoundary, gameDataAccess, null, null);
+        this.outputBoundary = outputBoundary;
+        this.gameDataAccess = gameDataAccess;
     }
+
 
     @Override
     public void execute(PlayerActionInputData inputData) {
@@ -106,13 +95,10 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
         gameDataAccess.setGameState("DEALER_TURN");
         Dealer dealer = gameDataAccess.getDealer();
-        if (dealerController != null) {
-            dealerController.executeDealerTurn();
-        } else {
-            while (dealer.GetDealerScore() < 17) {
-                Card newCard = gameDataAccess.drawCard();
-                dealer.draw(newCard);
-            }
+
+        while (dealer.GetDealerScore() < 17) {
+            Card newCard = gameDataAccess.drawCard();
+            dealer.draw(newCard);
         }
 
         int dealerScore = dealer.GetDealerScore();
@@ -129,8 +115,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         }
 
         if (totalPayout > 0) {
-            if (balanceUpdater != null) balanceUpdater.addBalance(inputData.getPlayerId(), totalPayout, "WIN");
-            else player.adjustBalance(totalPayout);
+            player.adjustBalance(totalPayout);
         }
 
         outputBoundary.present(new PlayerActionOutputData(true, resultMessage.toString(),
