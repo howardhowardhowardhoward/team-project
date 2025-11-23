@@ -1,4 +1,4 @@
-package usecase.dealeraction;
+package usecase.DealerAction;
 
 /**
  * INCOMPLETE IMPLEMENTATION - Input boundary for DealerAction use case
