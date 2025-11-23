@@ -13,11 +13,6 @@ public class Player {
     private Hand hand2;
 
     // Primary hand (always exists)
-    private Hand hand1;
-
-    // Secondary hand (only exists after splitting, otherwise null)
-    private Hand hand2;
-
     /**
      * Constructor.
      * @param initialBalance The starting chips for the player.
