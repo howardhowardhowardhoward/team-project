@@ -338,7 +338,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
      */
     private void executeSplit(PlayerActionInputData inputData) {
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
-        return;
+        // FIXED: Removed early return that prevented SPLIT functionality
         Hand hand = player.getHand(inputData.getHandIndex());
 
         // Validation: Can only split pairs
