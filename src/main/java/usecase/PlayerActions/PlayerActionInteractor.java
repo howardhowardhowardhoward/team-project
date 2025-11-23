@@ -86,7 +86,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
      */
     private void executeHit(PlayerActionInputData inputData) {
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
-        Hand hand = player.getHand(inputData.getHandIndex());
+        Hand hand = player.getHand();
 
         // Validation: Can't hit if already bust or at 21
         if (hand.isBust()) {
