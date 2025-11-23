@@ -1,7 +1,7 @@
 package usecase.PlayerActions;
 
 import entities.*;
-import frameworks_and_drivers.DeckApiService;
+import usecase.DeckProvider;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,15 +16,15 @@ public class SimpleGameDataAccess implements GameDataAccess {
 
     private Player player;
     private Dealer dealer;
-    private Deck deck;
+    private DeckProvider deckProvider;
     private Map<Integer, Double> betAmounts;
     private Map<Integer, Boolean> handCompletion;
     private String gameState;
 
-    public SimpleGameDataAccess(Player player, Dealer dealer, Deck deck) {
+    public SimpleGameDataAccess(Player player, Dealer dealer, DeckProvider deckProvider) {
         this.player = player;
         this.dealer = dealer;
-        this.deck = deck;
+        this.deckProvider = deckProvider;
         this.betAmounts = new HashMap<>();
         this.handCompletion = new HashMap<>();
         this.gameState = "PLAYER_TURN";
@@ -42,12 +42,15 @@ public class SimpleGameDataAccess implements GameDataAccess {
 
     @Override
     public Card drawCard() {
-        return deck.drawCard();
+        return deckProvider.drawCard();
     }
 
     @Override
     public double getBetAmount(int handIndex) {
-        return betAmounts.getOrDefault(handIndex, 100.0);  // Default $100 bet
+        if (!betAmounts.containsKey(handIndex)) {
+            System.err.println("WARNING: Bet not set for hand " + handIndex + ", using default 100.0");
+        }
+        return betAmounts.getOrDefault(handIndex, 100.0);
     }
 
     public void setBetAmount(int handIndex, double amount) {
