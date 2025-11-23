@@ -1,23 +1,25 @@
 package entities;
 
 import frameworks_and_drivers.DeckApiService;
-import java.util.List;
 
 public class Game {
     private Player player;
     private Dealer dealer;
     private Deck gameDeck;
-    private List<Card> playerCard;
-    private List<Card> dealerCard;
     private int balance;
     private int currentBet;
     private boolean roundActive;
 
+    // Default constructor - creates new DeckApiService (backward compatibility)
     public Game() {
-        DeckApiService deckApiService = new DeckApiService();
-        this.gameDeck = new Deck(deckApiService);
+        this(new DeckApiService());
+    }
+
+    // IMPROVED: Constructor with dependency injection for better testability
+    public Game(DeckProvider deckProvider) {
+        this.gameDeck = new Deck(deckProvider);
         this.player = new Player(1000);
-        this.dealer = new Dealer(gameDeck); // Dealer also has a Hand
+        this.dealer = new Dealer(gameDeck);
         this.balance = 1000; // starting balance
         this.roundActive = false;
     }
@@ -54,6 +56,7 @@ public class Game {
         this.roundActive = active;
     }
 
+
     // ============================
     //       GAME MANAGEMENT
     // ============================
@@ -84,8 +87,8 @@ public class Game {
 
     /** Check initial blackjack case for player or dealer */
     public boolean checkInitialBlackjack() {
-        return player.isBlackjack() || dealer.isBlackJack();
+        return player.isBlackjack();
     }
 
 }
-}
+

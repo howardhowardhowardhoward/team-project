@@ -9,6 +9,8 @@ package entities;
  */
 public class Player {
     private double balance;
+    private Hand hand;
+    private Hand hand2;
 
     // Primary hand (always exists)
     private Hand hand1;

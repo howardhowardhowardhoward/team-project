@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 import entities.*;
 import java.util.HashMap;
@@ -6,9 +6,7 @@ import java.util.Map;
 
 /**
  * Simple in-memory implementation of GameDataAccess for testing.
- *
  * TEMPORARY IMPLEMENTATION - To be replaced when Gopal implements proper Game management
- *
  * This allows you to test your PlayerAction code independently.
  *
  * @author Wentai Zhang (eurekoko) - Temporary Implementation
@@ -43,27 +41,7 @@ public class SimpleGameDataAccess implements GameDataAccess {
 
     @Override
     public Card drawCard() {
-        // TODO: This should call Gopal's DeckApiService
-        // For now, create a dummy card
-        // In real implementation, this would be: deck.drawCard()
-
-        // Temporary: return a random card
-        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "JACK", "QUEEN", "KING", "ACE"};
-        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
-
-        String rank = ranks[(int)(Math.random() * ranks.length)];
-        String suit = suits[(int)(Math.random() * suits.length)];
-
-        int value;
-        if (rank.equals("ACE")) {
-            value = 11;
-        } else if (rank.equals("JACK") || rank.equals("QUEEN") || rank.equals("KING")) {
-            value = 10;
-        } else {
-            value = Integer.parseInt(rank);
-        }
-
-        return new Card(rank.charAt(0) + suit.charAt(0) + "", suit, rank, value);
+        return deck.drawCard();
     }
 
     @Override
@@ -83,6 +61,10 @@ public class SimpleGameDataAccess implements GameDataAccess {
     @Override
     public boolean isHandComplete(int handIndex) {
         return handCompletion.getOrDefault(handIndex, false);
+    }
+
+    public void addHandBet(int handIndex, double amount) {
+        betAmounts.put(handIndex, amount);
     }
 
     @Override
