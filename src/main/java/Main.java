@@ -5,7 +5,7 @@ import usecase.updatebalance.UpdateBalanceDataAccessInterface;
 import usecase.updatebalance.UpdateBalanceInteractor;
 
 // Correct import for the moved View class
-import gui.view.BettingView;
+import gui.BettingView;
 
 import javax.swing.*;
 

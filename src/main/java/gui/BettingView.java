@@ -1,12 +1,10 @@
-package gui.view;
+package gui;
 
 import interface_adapter.update_balance.UpdateBalanceController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Betting View (GUI).
