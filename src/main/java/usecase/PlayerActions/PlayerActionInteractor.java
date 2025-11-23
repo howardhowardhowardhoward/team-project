@@ -1,7 +1,6 @@
 package usecase.PlayerActions;
 
 import entities.*;
-import usecase.DealerAction.DealerActionController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,22 +10,14 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     private final PlayerActionOutputBoundary outputBoundary;
     private final GameDataAccess gameDataAccess;
-    private final DealerActionController dealerController;
-
-    public PlayerActionInteractor(
-            PlayerActionOutputBoundary outputBoundary,
-            GameDataAccess gameDataAccess,
-            DealerActionController dealerController) {
-        this.outputBoundary = outputBoundary;
-        this.gameDataAccess = gameDataAccess;
-        this.dealerController = dealerController;
-    }
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
             GameDataAccess gameDataAccess) {
-        this(outputBoundary, gameDataAccess, null);
+        this.outputBoundary = outputBoundary;
+        this.gameDataAccess = gameDataAccess;
     }
+
 
     @Override
     public void execute(PlayerActionInputData inputData) {
@@ -103,13 +94,10 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
         gameDataAccess.setGameState("DEALER_TURN");
         Dealer dealer = gameDataAccess.getDealer();
-        if (dealerController != null) {
-            dealerController.execute();
-        } else {
-            while (dealer.GetDealerScore() < 17) {
-                Card newCard = gameDataAccess.drawCard();
-                dealer.draw(newCard);
-            }
+
+        while (dealer.GetDealerScore() < 17) {
+            Card newCard = gameDataAccess.drawCard();
+            dealer.draw(newCard);
         }
 
         int dealerScore = dealer.GetDealerScore();
