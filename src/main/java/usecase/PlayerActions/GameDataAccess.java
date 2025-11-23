@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 import entities.Card;
 import entities.Dealer;
@@ -23,4 +23,7 @@ public interface GameDataAccess {
     String getGameState();
 
     void setGameState(String state);
+
+    void setBetAmount(int handIndex, double v);
+    void addHandBet(int handIndex, double amount);
 }
