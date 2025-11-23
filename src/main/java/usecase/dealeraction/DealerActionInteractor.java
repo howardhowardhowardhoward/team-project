@@ -1,4 +1,5 @@
 package usecase.dealeraction;
+import entities.*;
 
 /**
  * INCOMPLETE IMPLEMENTATION - DealerAction use case not implemented
@@ -13,5 +14,17 @@ package usecase.dealeraction;
  * This interactor should coordinate that with game state
  */
 public class DealerActionInteractor {
-    // Empty - needs implementation
+    private Game game;
+    private Dealer dealer;
+
+    public DealerActionInteractor(Game game){
+        this.game = game;
+        this.dealer = game.getDealer();
+    }
+
+    public void execute(DealerActionInputBoundary dealerActionInputBoundary){
+        dealer.play();
+        DealerActionOutputBoundary.present();
+    }
+
 }

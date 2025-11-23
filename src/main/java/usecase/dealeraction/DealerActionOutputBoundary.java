@@ -5,6 +5,5 @@ package usecase.dealeraction;
  * TODO: Define present method with DealerActionOutputData parameter
  */
 public interface DealerActionOutputBoundary {
-    // Empty - needs method definitions
-    // Expected: void present(DealerActionOutputData outputData);
+    default void present(DealerActionOutputBoundary outputBoundary){}
 }

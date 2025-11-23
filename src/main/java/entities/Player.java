@@ -5,12 +5,14 @@ import java.util.List;
 
 public class Player {
     private double balance;
-    private List<Hand> hands;  // Changed to support multiple hands for SPLIT functionality
+    private Hand hand;
+    private Hand hand2;
+
 
     public Player(double initialBalance) {
         this.balance = initialBalance;
-        this.hands = new ArrayList<>();
-        this.hands.add(new Hand());  // Start with one hand
+        this.hand = new Hand();
+        this.hand2 = new Hand();
     }
 
     public void adjustBalance(double amount) {
@@ -26,7 +28,14 @@ public class Player {
         return balance;
     }
 
-    // Legacy method for backward compatibility - returns primary hand
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
+
+    public void setHand2(Hand hand){
+        this.hand2 = hand;
+    }
+
     public Hand getHand() {
         return hands.isEmpty() ? new Hand() : hands.get(0);
     }
@@ -48,6 +57,8 @@ public class Player {
     public void addHand(Hand hand) {
         this.hands.add(hand);
     }
+
+    public Hand getHand2() { return  hand2;}
 
     public void placeBet(double amount) {
         if (amount <= 0) {
