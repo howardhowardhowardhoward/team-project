@@ -50,14 +50,14 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     // --- HELPER: Adapter for hand1/hand2 ---
     private Hand getHandByIndex(Player player, int index) {
-        if (index == 0) return player.getHand1();
+        if (index == 0) return player.getHand();
         if (index == 1) return player.getHand2();
         throw new IllegalArgumentException("Invalid hand index: " + index);
     }
 
     private List<Hand> getPlayerHandsList(Player player) {
         List<Hand> hands = new ArrayList<>();
-        if (player.getHand1() != null) hands.add(player.getHand1());
+        if (player.getHand() != null) hands.add(player.getHand());
         if (player.hasSplit() && player.getHand2() != null) hands.add(player.getHand2());
         return hands;
     }
@@ -155,7 +155,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     private void executeSplit(PlayerActionInputData inputData) {
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
-        Hand hand1 = player.getHand1();
+        Hand hand1 = player.getHand();
         double bet = gameDataAccess.getBetAmount(inputData.getHandIndex());
 
         if (player.getBalance() >= bet && hand1.canSplit() && !player.hasSplit()) {

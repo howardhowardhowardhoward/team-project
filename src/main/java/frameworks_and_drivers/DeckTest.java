@@ -4,7 +4,7 @@ import usecase.DeckProvider;
 public class DeckTest {
     public static void main(String[] args) {
         DeckApiService deckApiService = new DeckApiService();
-        DeckProvider deck = DeckProvider();
+        DeckProvider deck = new DeckApiService();
 
         for (int i = 0; i < 52; i++) {
             System.out.println(deck.drawCard());

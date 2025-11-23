@@ -32,7 +32,7 @@ public class DeckApiService implements DeckProvider {
     }
 
     @Override
-    public void shuffleDeck() {
+    public void shuffle() {
         try {
             Request request = new Request.Builder()
                     .url(API_URL + "/" + deckId + "/shuffle/")

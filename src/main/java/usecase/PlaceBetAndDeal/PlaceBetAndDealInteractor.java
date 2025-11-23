@@ -24,7 +24,7 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
         try {
             double balance = player.getBalance();
             double betAmount = inputData.getBetAmount();
-            boolean playerBlackjack = player.isBlackjack(0);
+            boolean playerBlackjack = player.isBlackjack();
 
             // Place bet
             player.placeBet(betAmount);
@@ -38,7 +38,7 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
             List<Card> playerCards = deck.drawCards(2);
             List<Card> dealerCards = deck.drawCards(2);
 
-            Hand playerHand = new Hand();
+            Hand playerHand = player.getHand();
             Hand dealerHand = dealer.getHand();
 
             playerHand.addCard(playerCards.get(0));

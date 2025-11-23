@@ -24,14 +24,13 @@ public class Player {
         this.hand2 = null; // FIXED: Ensure this is null initially!
     }
 
+    public void setHand2(Hand hand){
+        this.hand2 = hand;
+    }
+
     // --- Compatibility Method ---
     public Hand getHand() {
         return this.hand1;
-    }
-
-    // --- Accessors ---
-    public Hand getHand1() {
-        return hand1;
     }
 
     public Hand getHand2() {
