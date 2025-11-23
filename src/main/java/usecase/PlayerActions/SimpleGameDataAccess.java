@@ -1,23 +1,16 @@
-package usecase;
+package usecase.PlayerActions;
 
 import entities.*;
+import frameworks_and_drivers.Deck; // 新增：导入 Deck
+
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Simple in-memory implementation of GameDataAccess for testing.
- *
- * TEMPORARY IMPLEMENTATION - To be replaced when Gopal implements proper Game management
- *
- * This allows you to test your PlayerAction code independently.
- *
- * @author Wentai Zhang (eurekoko) - Temporary Implementation
- */
 public class SimpleGameDataAccess implements GameDataAccess {
 
     private Player player;
     private Dealer dealer;
-    private Deck deck;
+    private Deck deck; // 使用 frameworks_and_drivers.Deck
     private Map<Integer, Double> betAmounts;
     private Map<Integer, Boolean> handCompletion;
     private String gameState;
@@ -32,45 +25,20 @@ public class SimpleGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public Player getPlayer(String playerId) {
-        return player;
-    }
+    public Player getPlayer(String playerId) { return player; }
 
     @Override
-    public Dealer getDealer() {
-        return dealer;
-    }
+    public Dealer getDealer() { return dealer; }
 
     @Override
-    public Card drawCard() {
-        // TODO: This should call Gopal's DeckApiService
-        // For now, create a dummy card
-        // In real implementation, this would be: deck.drawCard()
-
-        // Temporary: return a random card
-        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "JACK", "QUEEN", "KING", "ACE"};
-        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
-
-        String rank = ranks[(int)(Math.random() * ranks.length)];
-        String suit = suits[(int)(Math.random() * suits.length)];
-
-        int value;
-        if (rank.equals("ACE")) {
-            value = 11;
-        } else if (rank.equals("JACK") || rank.equals("QUEEN") || rank.equals("KING")) {
-            value = 10;
-        } else {
-            value = Integer.parseInt(rank);
-        }
-
-        return new Card(rank.charAt(0) + suit.charAt(0) + "", suit, rank, value);
-    }
+    public Card drawCard() { return deck.drawCard(); }
 
     @Override
     public double getBetAmount(int handIndex) {
-        return betAmounts.getOrDefault(handIndex, 100.0);  // Default $100 bet
+        return betAmounts.getOrDefault(handIndex, 100.0);
     }
 
+    @Override
     public void setBetAmount(int handIndex, double amount) {
         betAmounts.put(handIndex, amount);
     }
@@ -86,22 +54,21 @@ public class SimpleGameDataAccess implements GameDataAccess {
     }
 
     @Override
+    public void addHandBet(int handIndex, double amount) {
+        betAmounts.put(handIndex, amount);
+    }
+
+    @Override
     public boolean allHandsComplete() {
         for (int i = 0; i < player.getHands().size(); i++) {
-            if (!isHandComplete(i)) {
-                return false;
-            }
+            if (!isHandComplete(i)) return false;
         }
         return true;
     }
 
     @Override
-    public String getGameState() {
-        return gameState;
-    }
+    public String getGameState() { return gameState; }
 
     @Override
-    public void setGameState(String state) {
-        this.gameState = state;
-    }
+    public void setGameState(String state) { this.gameState = state; }
 }

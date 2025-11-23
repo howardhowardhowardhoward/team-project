@@ -1,7 +1,6 @@
 package frameworks_and_drivers;
 
 import entities.Card;
-import entities.DeckProvider;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
@@ -84,7 +83,7 @@ public class DeckApiService implements DeckProvider {
 
     @NotNull
     private static Card getCard(JSONObject cardJson) {
-        String value = cardJson.getString("value");
+        String value = cardJson.getString("value");  // This is the rank ("ACE", "KING", "10", etc.)
         int valueInt = switch (value) {
             case "ACE" -> 11;
             case "KING", "QUEEN", "JACK" -> 10;
@@ -92,9 +91,10 @@ public class DeckApiService implements DeckProvider {
         };
         String suit = cardJson.getString("suit");
         String code = cardJson.getString("code");
-        String image = cardJson.getString("image");
+        // FIXED: Card constructor expects (code, suit, rank, value), not (code, suit, image, value)
+        // The 'value' field from API is the rank string, valueInt is the numeric value
 
-        return new Card(code, suit, image, valueInt);
+        return new Card(code, suit, value, valueInt);  // value = rank string, valueInt = numeric value
     }
 
 }

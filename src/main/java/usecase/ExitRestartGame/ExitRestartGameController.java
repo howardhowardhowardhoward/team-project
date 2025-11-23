@@ -1,4 +1,4 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 /**
  * Controller for Exit or Restart Game use case
@@ -13,7 +13,6 @@ public class ExitRestartGameController {
     
     /**
      * Handle exit game request
-     * Main Flow: User selects exit button
      */
     public void handleExitGame() {
         interactor.executeExit();
@@ -21,7 +20,6 @@ public class ExitRestartGameController {
     
     /**
      * Handle restart game request  
-     * Alternate Flow: User selects restart button
      */
     public void handleRestartGame() {
         interactor.executeRestart();
