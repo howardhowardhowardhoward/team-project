@@ -3,13 +3,8 @@ package entities;
 
 public class Dealer {
     private Hand hand;
-    private Deck deck;
-    // REMOVED REDUNDANT FIELD: private int score;
-    // Hand class already calculates score via getTotalPoints()
-
-    public Dealer(Deck deck) {
+    public Dealer() {
         this.hand = new Hand();
-        this.deck = deck;
     }
 
     public void draw(Card card) {
@@ -24,14 +19,6 @@ public class Dealer {
 
     public Hand getHand() {
         return this.hand;
-    }
-
-    public void play() {
-        // FIXED: Use hand.getTotalPoints() instead of maintaining separate score field
-        while (this.hand.getTotalPoints() < 17) {
-            Card newcard = this.deck.drawCard();
-            this.draw(newcard);
-        }
     }
 
     public boolean isBust() {
