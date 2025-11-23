@@ -82,6 +82,5 @@ public class Game {
     public boolean checkInitialBlackjack() {
         return player.isBlackjack();
     }
-
 }
 

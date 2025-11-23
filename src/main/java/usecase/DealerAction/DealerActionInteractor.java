@@ -5,10 +5,14 @@ import usecase.DeckProvider;
 public class DealerActionInteractor {
     private Game game;
     private Dealer dealer;
+    private final DeckProvider deckProvider;
+    private final DealerActionOutputBoundary presenter;
 
-    public DealerActionInteractor(Game game){
+    public DealerActionInteractor(Game game, DeckProvider deckProvider, DealerActionOutputBoundary presenter){
         this.game = game;
-        this.dealer = this.game.getDealer();
+        this.dealer = game.getDealer();
+        this.deckProvider = deckProvider;
+        this.presenter = presenter;
     }
 
     public void play(DeckProvider deck) {
@@ -18,7 +22,8 @@ public class DealerActionInteractor {
         }
         Dealer dealer = this.dealer;
         int dealerScore = dealer.GetDealerScore();
-        boolean
+        boolean dealerBust = (dealerScore > 21);
+        boolean dealerBlackjack = dealer.isBlackJack();
     }
 
     public void execute(DealerActionInputBoundary dealerActionInputBoundary){
