@@ -1,6 +1,7 @@
 package usecase.PlaceBetAndDeal;
 
 import entities.*;
+import usecase.DeckProvider;
 
 import java.util.List;
 
