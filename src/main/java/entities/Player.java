@@ -3,12 +3,17 @@ package entities;
 /**
  * Player Entity.
  * Represents a user in the game, managing their balance and hands.
- * Fixed: Removed duplicate field declarations caused by a bad merge.
+ * Fixed: Logic adjusted to support hand1/hand2 structure and fix initialization bugs.
  */
 public class Player {
     private double balance;
 
     // Primary hand (always exists)
+    private Hand hand1;
+
+    // Secondary hand (only exists after splitting, otherwise null)
+    private Hand hand2;
+
     /**
      * Constructor.
      * @param initialBalance The starting chips for the player.
@@ -16,21 +21,15 @@ public class Player {
     public Player(double initialBalance) {
         this.balance = initialBalance;
         this.hand1 = new Hand();
-        this.hand2 = null; // Ensure this is null initially!
+        this.hand2 = null; // FIXED: Ensure this is null initially!
     }
 
     // --- Compatibility Method ---
-
-    /**
-     * Gets the primary hand.
-     * Returns hand1 so that teammate's code (which expects getHand()) still works.
-     */
     public Hand getHand() {
         return this.hand1;
     }
 
     // --- Accessors ---
-
     public Hand getHand1() {
         return hand1;
     }
@@ -44,7 +43,6 @@ public class Player {
     }
 
     // --- Betting & Balance Logic ---
-
     public void adjustBalance(double amount) {
         this.balance += amount;
     }
@@ -64,7 +62,6 @@ public class Player {
     }
 
     // --- Game Logic ---
-
     public boolean isBlackjack() {
         return this.hand1.isBlackjack();
     }
@@ -82,6 +79,6 @@ public class Player {
             throw new IllegalStateException("Cannot split more than once.");
         }
         this.hand2 = new Hand();
-        // Logic to move card and deduct bet goes here later
+        // Logic to move card will be handled by Interactor
     }
 }
