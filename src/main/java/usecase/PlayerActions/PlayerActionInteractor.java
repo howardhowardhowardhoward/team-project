@@ -106,8 +106,14 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
         gameDataAccess.setGameState("DEALER_TURN");
         Dealer dealer = gameDataAccess.getDealer();
-        if (dealerController != null) dealerController.executeDealerTurn();
-        else dealer.play();
+        if (dealerController != null) {
+            dealerController.executeDealerTurn();
+        } else {
+            while (dealer.GetDealerScore() < 17) {
+                Card newCard = gameDataAccess.drawCard();
+                dealer.draw(newCard);
+            }
+        }
 
         int dealerScore = dealer.GetDealerScore();
         StringBuilder resultMessage = new StringBuilder();
@@ -156,8 +162,12 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             player.adjustBalance(-bet);
             player.split();
             // Move card logic
-            Card splitCard = hand1.getCards().remove(1);
-            player.getHand2().addCard(splitCard);
+            List<Card> cards = hand1.getCards();
+            Card firstCard = cards.get(0);
+            Card secondCard = cards.get(1);
+            hand1.clear();
+            hand1.addCard(firstCard);
+            player.getHand2().addCard(secondCard);
             hand1.addCard(gameDataAccess.drawCard());
             player.getHand2().addCard(gameDataAccess.drawCard());
 
