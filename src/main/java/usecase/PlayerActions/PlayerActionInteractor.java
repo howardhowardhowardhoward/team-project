@@ -11,24 +11,21 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     private final PlayerActionOutputBoundary outputBoundary;
     private final GameDataAccess gameDataAccess;
-    private final BalanceUpdater balanceUpdater;
     private final DealerActionController dealerController;
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
             GameDataAccess gameDataAccess,
-            BalanceUpdater balanceUpdater,
             DealerActionController dealerController) {
         this.outputBoundary = outputBoundary;
         this.gameDataAccess = gameDataAccess;
-        this.balanceUpdater = balanceUpdater;
         this.dealerController = dealerController;
     }
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
             GameDataAccess gameDataAccess) {
-        this(outputBoundary, gameDataAccess, null, null);
+        this(outputBoundary, gameDataAccess, null);
     }
 
     @Override
@@ -107,7 +104,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         gameDataAccess.setGameState("DEALER_TURN");
         Dealer dealer = gameDataAccess.getDealer();
         if (dealerController != null) {
-            dealerController.executeDealerTurn();
+            dealerController.execute();
         } else {
             while (dealer.GetDealerScore() < 17) {
                 Card newCard = gameDataAccess.drawCard();
@@ -129,8 +126,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         }
 
         if (totalPayout > 0) {
-            if (balanceUpdater != null) balanceUpdater.addBalance(inputData.getPlayerId(), totalPayout, "WIN");
-            else player.adjustBalance(totalPayout);
+            player.adjustBalance(totalPayout);
         }
 
         outputBoundary.present(new PlayerActionOutputData(true, resultMessage.toString(),
