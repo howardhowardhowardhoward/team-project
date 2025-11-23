@@ -19,11 +19,6 @@ public class Player {
         this.balance += amount;
     }
 
-    public void clearHands() {
-        this.hands.clear();
-        this.hands.add(new Hand());  // Reset to one empty hand
-    }
-
     public double getBalance() {
         return balance;
     }
@@ -36,27 +31,7 @@ public class Player {
         this.hand2 = hand;
     }
 
-    public Hand getHand() {
-        return hands.isEmpty() ? new Hand() : hands.get(0);
-    }
-
-    // New method to support multiple hands (for SPLIT)
-    public Hand getHand(int index) {
-        if (index < 0 || index >= hands.size()) {
-            throw new IndexOutOfBoundsException("Invalid hand index: " + index);
-        }
-        return hands.get(index);
-    }
-
-    // Get all hands
-    public List<Hand> getHands() {
-        return new ArrayList<>(hands);  // Return defensive copy
-    }
-
-    // Add a new hand (used for SPLIT)
-    public void addHand(Hand hand) {
-        this.hands.add(hand);
-    }
+    public Hand getHand() {return hand;}
 
     public Hand getHand2() { return  hand2;}
 
@@ -70,8 +45,12 @@ public class Player {
         this.balance -= amount;
     }
 
+    public boolean hasSplit(){
+        return this.hand2 != null;
+    }
+
     public boolean isBlackjack() {
         // Check if primary hand is blackjack
-        return !hands.isEmpty() && hands.get(0).isBlackjack();
+        return hand.isBlackjack();
     }
 }
