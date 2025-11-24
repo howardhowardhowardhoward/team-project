@@ -1,7 +1,7 @@
 package interface_adapter.dealeraction;
 
-import usecase.dealeraction.DealerActionOutputBoundary;
-import usecase.dealeraction.DealerActionOutputData;
+import usecase.DealerAction.DealerActionOutputBoundary;
+import usecase.DealerAction.DealerActionOutputData;
 
 /**
  * Presenter for the DealerAction use case.

@@ -1,8 +1,9 @@
-package usecase.dealeraction;
-import entities.*;
+package usecase.DealerAction;
+
+import entities.Card;
+import entities.Dealer;
 import usecase.PlayerActions.BalanceUpdater;
 import usecase.PlayerActions.GameDataAccess;
-import java.util.List;
 
 /**
  * Interactor for DealerAction use case.

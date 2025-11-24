@@ -1,4 +1,4 @@
-package usecase.dealeraction;
+package usecase.DealerAction;
 
 import entities.Card;
 import java.util.List;
