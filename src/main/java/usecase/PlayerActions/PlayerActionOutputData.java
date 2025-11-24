@@ -1,85 +1,93 @@
 package usecase.PlayerActions;
 
+import entities.Hand;
 import java.util.List;
 
 /**
  * Output data from player action execution.
  * Contains the results and state after a player action.
- *
- * @author Wentai Zhang (eurekoko)
  */
 public class PlayerActionOutputData {
+
     private final boolean success;
     private final String message;
+
     private final int handTotal;
     private final boolean isBust;
     private final boolean isBlackjack;
+
     private final List<String> availableActions;
-    private final boolean gameComplete;
-    private final String gameResult;  // For STAND: "WIN", "LOSE", "PUSH", or null if game ongoing
-    private final int dealerTotal;    // Dealer's total after STAND, -1 if not applicable
+
+    private final boolean gameComplete;   // true when dealer turn resolved
+    private final String gameResult;      // "WIN", "LOSE", "PUSH", or null
+    private final int dealerTotal;        // dealer final total, -1 if NA
+
+    private final Hand playerHand;        // cards for updating GameView
 
     /**
-     * Constructor for ongoing game actions (HIT, partial STAND)
+     * Constructor for ongoing game actions (HIT, SPLIT, DOUBLE, mid-STAND).
      */
-    public PlayerActionOutputData(boolean success, String message, int handTotal,
-                                  boolean isBust, boolean isBlackjack,
-                                  List<String> availableActions) {
-        this(success, message, handTotal, isBust, isBlackjack, availableActions,
-                false, null, -1);
+    public PlayerActionOutputData(boolean success,
+                                  String message,
+                                  int handTotal,
+                                  boolean isBust,
+                                  boolean isBlackjack,
+                                  List<String> availableActions,
+                                  Hand playerHand) {
+
+        this(success, message, handTotal, isBust, isBlackjack,
+                availableActions, false, null, -1, playerHand);
     }
 
     /**
-     * Full constructor including game completion data (for final STAND)
+     * Constructor for final STAND where dealer resolves the round.
      */
-    public PlayerActionOutputData(boolean success, String message, int handTotal,
-                                  boolean isBust, boolean isBlackjack,
-                                  List<String> availableActions, boolean gameComplete,
-                                  String gameResult, int dealerTotal) {
+    public PlayerActionOutputData(boolean success,
+                                  String message,
+                                  int handTotal,
+                                  boolean isBust,
+                                  boolean isBlackjack,
+                                  List<String> availableActions,
+                                  boolean gameComplete,
+                                  String gameResult,
+                                  int dealerTotal,
+                                  Hand playerHand) {
+
         this.success = success;
         this.message = message;
+
         this.handTotal = handTotal;
         this.isBust = isBust;
         this.isBlackjack = isBlackjack;
+
         this.availableActions = availableActions;
+
         this.gameComplete = gameComplete;
         this.gameResult = gameResult;
         this.dealerTotal = dealerTotal;
+
+        this.playerHand = playerHand;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
+    // ======== GETTERS ========
 
-    public String getMessage() {
-        return message;
-    }
+    public boolean isSuccess() { return success; }
 
-    public int getHandTotal() {
-        return handTotal;
-    }
+    public String getMessage() { return message; }
 
-    public boolean isBust() {
-        return isBust;
-    }
+    public int getHandTotal() { return handTotal; }
 
-    public boolean isBlackjack() {
-        return isBlackjack;
-    }
+    public boolean isBust() { return isBust; }
 
-    public List<String> getAvailableActions() {
-        return availableActions;
-    }
+    public boolean isBlackjack() { return isBlackjack; }
 
-    public boolean isGameComplete() {
-        return gameComplete;
-    }
+    public List<String> getAvailableActions() { return availableActions; }
 
-    public String getGameResult() {
-        return gameResult;
-    }
+    public boolean isGameComplete() { return gameComplete; }
 
-    public int getDealerTotal() {
-        return dealerTotal;
-    }
+    public String getGameResult() { return gameResult; }
+
+    public int getDealerTotal() { return dealerTotal; }
+
+    public Hand getPlayerHand() { return playerHand; }
 }

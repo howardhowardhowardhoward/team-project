@@ -14,7 +14,7 @@ public class DealerActionPresenter implements DealerActionOutputBoundary {
 
     @Override
     public void present(DealerActionResponseModel response) {
-        view.updateDealerCards(response.getDealerCards());
-        view.showDealerOutcome(response.getDealerTotal(), response.isBust(), response.isBlackjack());
+        view.updateDealerCards(response.getDealerHand().getCards());
+        view.showDealerOutcome(response.getDealerScore(), response.isBust(), response.isBlackjack());
     }
 }

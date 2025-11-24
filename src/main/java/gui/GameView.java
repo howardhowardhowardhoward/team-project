@@ -65,7 +65,7 @@ public class GameView extends JPanel {
         split.addActionListener(e -> playerController.split());
 
         JButton insurance = new JButton("INSURANCE");
-        insurance.addActionListener(e -> playerController.insurance());
+        insurance.addActionListener(e -> playerController.insurance(0, 100));
 
         buttons.add(hit);
         buttons.add(stand);
@@ -98,5 +98,25 @@ public class GameView extends JPanel {
         if (bust) dealerLabel.setText("Dealer BUSTS (" + total + ")");
         else if (blackjack) dealerLabel.setText("Dealer BLACKJACK!");
         else dealerLabel.setText("Dealer Total: " + total);
+    }
+
+    public void displayMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg);
+    }
+
+    public void updatePlayerTotal(int total) {
+        playerLabel.setText("Player (" + total + ")");
+    }
+
+    public void showPlayerBust() {
+        playerLabel.setText("Player BUST!");
+    }
+
+    public void showPlayerBlackjack() {
+        playerLabel.setText("Player BLACKJACK!");
+    }
+
+    public void showFinalResult(String resultText) {
+        JOptionPane.showMessageDialog(this, resultText);
     }
 }

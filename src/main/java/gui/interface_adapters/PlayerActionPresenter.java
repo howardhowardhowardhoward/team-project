@@ -1,8 +1,8 @@
 package gui.interface_adapters;
 
 import gui.GameView;
-import usecase.PlayerAction.PlayerActionOutputBoundary;
-import usecase.PlayerAction.PlayerActionResponseModel;
+import usecase.PlayerActions.PlayerActionOutputBoundary;
+import usecase.PlayerActions.PlayerActionOutputData;
 
 public class PlayerActionPresenter implements PlayerActionOutputBoundary {
 
@@ -13,11 +13,26 @@ public class PlayerActionPresenter implements PlayerActionOutputBoundary {
     }
 
     @Override
-    public void present(PlayerActionResponseModel response) {
-        view.updatePlayerCards(response.getPlayerCards());
+    public void present(PlayerActionOutputData response) {
 
-        if (response.isAllHandsComplete()) {
-            response.getDealerController().execute();
+        // Display message (e.g., "Drew 10♣. Total: 20")
+        view.displayMessage(response.getMessage());
+
+        // Update player total in GUI
+        view.updatePlayerTotal(response.getHandTotal());
+
+        // If bust, notify GUI
+        if (response.isBust()) {
+            view.showBust();
+        }
+
+        // Enable/disable buttons based on available actions
+        view.updateAvailableActions(response.getAvailableActions());
+
+        // If round is finished, show results
+        if (response.isGameComplete()) {
+            view.updateDealerTotal(response.getDealerTotal());
+            view.showFinalResult(response.getGameResult());
         }
     }
 }

@@ -2,25 +2,40 @@ package usecase.PlayerActions;
 
 /**
  * Controller for Player Actions (Hit, Stand, Double, Split, Insurance).
- * Routes user input to the Interactor.
+ * Translates GUI button presses into InputData and calls the Interactor.
  */
 public class PlayerActionController {
 
     private final PlayerActionInputBoundary interactor;
 
+    private final String playerId = "PLAYER_1"; // or inject later if multi-player
+
     public PlayerActionController(PlayerActionInputBoundary interactor) {
         this.interactor = interactor;
     }
 
-    /**
-     * Executes a player action.
-     * @param playerId The ID of the player.
-     * @param action The action command (e.g., "HIT", "STAND").
-     * @param handIndex The index of the hand being played (0 for main, 1 for split).
-     * @param betAmount The bet amount (used for Double/Split/Insurance).
-     */
-    public void execute(String playerId, String action, int handIndex, double betAmount) {
-        PlayerActionInputData inputData = new PlayerActionInputData(playerId, action, handIndex, betAmount);
-        interactor.execute(inputData);
+    /** Wrapper for HIT */
+    public void hit(int handIndex) {
+        interactor.execute(new PlayerActionInputData(playerId, "HIT", handIndex));
+    }
+
+    /** Wrapper for STAND */
+    public void stand(int handIndex) {
+        interactor.execute(new PlayerActionInputData(playerId, "STAND", handIndex));
+    }
+
+    /** Wrapper for SPLIT */
+    public void split() {
+        interactor.execute(new PlayerActionInputData(playerId, "SPLIT", 0));
+    }
+
+    /** Wrapper for DOUBLE — GUI must supply bet amount */
+    public void doubleDown(int handIndex, double betAmount) {
+        interactor.execute(new PlayerActionInputData(playerId, "DOUBLE", handIndex, betAmount));
+    }
+
+    /** Wrapper for INSURANCE — GUI must supply bet amount */
+    public void insurance(int handIndex, double betAmount) {
+        interactor.execute(new PlayerActionInputData(playerId, "INSURANCE", handIndex, betAmount));
     }
 }

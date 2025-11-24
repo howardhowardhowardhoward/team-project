@@ -75,7 +75,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         else { availableActions.add("HIT"); availableActions.add("STAND"); }
 
         String message = String.format("Drew %s. Total: %d", newCard.toString(), newTotal) + (bust ? " - BUST!" : "");
-        outputBoundary.present(new PlayerActionOutputData(true, message, newTotal, bust, hand.isBlackjack(), availableActions));
+        outputBoundary.present(new PlayerActionOutputData(true, message, newTotal, bust, hand.isBlackjack(), availableActions, player.getHand()));
     }
 
     private void executeStand(PlayerActionInputData inputData) {
@@ -87,7 +87,9 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             int nextHandIndex = findNextIncompleteHand(player);
             if (nextHandIndex != -1) {
                 outputBoundary.present(new PlayerActionOutputData(true, "Moving to next hand...",
-                        currentHand.getTotalPoints(), false, false, getAvailableActions(getHandByIndex(player, nextHandIndex), player, nextHandIndex)));
+                        currentHand.getTotalPoints(), false, false,
+                        getAvailableActions(getHandByIndex(player, nextHandIndex), player, nextHandIndex),
+                        player.getHand()));
                 return;
             }
         }
@@ -118,7 +120,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         }
 
         outputBoundary.present(new PlayerActionOutputData(true, resultMessage.toString(),
-                currentHand.getTotalPoints(), false, false, Arrays.asList("NEW_ROUND"), true, "COMPLETE", dealerScore));
+                currentHand.getTotalPoints(), false, false, Arrays.asList("NEW_ROUND"), true, "COMPLETE", dealerScore, player.getHand()));
     }
 
     private void executeDouble(PlayerActionInputData inputData) {
@@ -133,7 +135,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             hand.addCard(gameDataAccess.drawCard());
             gameDataAccess.markHandComplete(inputData.getHandIndex());
             if (gameDataAccess.allHandsComplete()) executeStand(inputData);
-            else outputBoundary.present(new PlayerActionOutputData(true, "Doubled!", hand.getTotalPoints(), hand.isBust(), false, Arrays.asList("NEXT_HAND")));
+            else outputBoundary.present(new PlayerActionOutputData(true, "Doubled!", hand.getTotalPoints(), hand.isBust(), false, Arrays.asList("NEXT_HAND"), player.getHand()));
         } else handleInvalidAction(inputData, "Insufficient balance");
     }
 
@@ -156,13 +158,14 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             player.getHand2().addCard(gameDataAccess.drawCard());
             gameDataAccess.setBetAmount(1, bet);
 
-            outputBoundary.present(new PlayerActionOutputData(true, "Split successful!", hand1.getTotalPoints(), false, false, getAvailableActions(hand1, player, 0)));
+            outputBoundary.present(new PlayerActionOutputData(true, "Split successful!", hand1.getTotalPoints(), false, false, getAvailableActions(hand1, player, 0), player.getHand()));
         } else handleInvalidAction(inputData, "Cannot split");
     }
 
     private void executeInsurance(PlayerActionInputData inputData) {
         // Simplified insurance
-        outputBoundary.present(new PlayerActionOutputData(true, "Insurance handled", 0, false, false, Arrays.asList("HIT", "STAND")));
+        Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
+        outputBoundary.present(new PlayerActionOutputData(true, "Insurance handled", 0, false, false, Arrays.asList("HIT", "STAND"), player.getHand()));
     }
 
     // Helpers
@@ -238,6 +241,6 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
             }
         }
     }
-    private void handleInvalidAction(PlayerActionInputData i, String r) { outputBoundary.present(new PlayerActionOutputData(false, r, 0, false, false, null)); }
-    private void handleError(PlayerActionInputData i, Exception e) { outputBoundary.present(new PlayerActionOutputData(false, e.getMessage(), 0, false, false, null)); }
+    private void handleInvalidAction(PlayerActionInputData i, String r) { outputBoundary.present(new PlayerActionOutputData(false, r, 0, false, false, null, new Hand())); }
+    private void handleError(PlayerActionInputData i, Exception e) { outputBoundary.present(new PlayerActionOutputData(false, e.getMessage(), 0, false, false, null, new Hand())); }
 }
