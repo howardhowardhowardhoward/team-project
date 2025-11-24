@@ -1,7 +1,8 @@
 package usecase.PlaceBetAndDeal;
 
 import entities.*;
-import usecase.DeckProvider;
+import frameworks_and_drivers.DeckProvider; // 新增：导入正确的接口
+import frameworks_and_drivers.Deck; // 可能需要，视具体实现而定
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
             List<Card> playerCards = deck.drawCards(2);
             List<Card> dealerCards = deck.drawCards(2);
 
-            Hand playerHand = player.getHand();
+            Hand playerHand = player.getHand1(); //
             Hand dealerHand = dealer.getHand();
 
             playerHand.addCard(playerCards.get(0));

@@ -1,58 +1,44 @@
 package usecase.PlayerActions;
 
 import entities.*;
-import usecase.DeckProvider;
+import frameworks_and_drivers.Deck; // 新增：导入 Deck
+
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Simple in-memory implementation of GameDataAccess for testing.
- * TEMPORARY IMPLEMENTATION - To be replaced when Gopal implements proper Game management
- * This allows you to test your PlayerAction code independently.
- *
- * @author Wentai Zhang (eurekoko) - Temporary Implementation
- */
 public class SimpleGameDataAccess implements GameDataAccess {
 
     private Player player;
     private Dealer dealer;
-    private DeckProvider deckProvider;
+    private Deck deck; // 使用 frameworks_and_drivers.Deck
     private Map<Integer, Double> betAmounts;
     private Map<Integer, Boolean> handCompletion;
     private String gameState;
 
-    public SimpleGameDataAccess(Player player, Dealer dealer, DeckProvider deckProvider) {
+    public SimpleGameDataAccess(Player player, Dealer dealer, Deck deck) {
         this.player = player;
         this.dealer = dealer;
-        this.deckProvider = deckProvider;
+        this.deck = deck;
         this.betAmounts = new HashMap<>();
         this.handCompletion = new HashMap<>();
         this.gameState = "PLAYER_TURN";
     }
 
     @Override
-    public Player getPlayer(String playerId) {
-        return player;
-    }
+    public Player getPlayer(String playerId) { return player; }
 
     @Override
-    public Dealer getDealer() {
-        return dealer;
-    }
+    public Dealer getDealer() { return dealer; }
 
     @Override
-    public Card drawCard() {
-        return deckProvider.drawCard();
-    }
+    public Card drawCard() { return deck.drawCard(); }
 
     @Override
     public double getBetAmount(int handIndex) {
-        if (!betAmounts.containsKey(handIndex)) {
-            System.err.println("WARNING: Bet not set for hand " + handIndex + ", using default 100.0");
-        }
         return betAmounts.getOrDefault(handIndex, 100.0);
     }
 
+    @Override
     public void setBetAmount(int handIndex, double amount) {
         betAmounts.put(handIndex, amount);
     }
@@ -67,30 +53,22 @@ public class SimpleGameDataAccess implements GameDataAccess {
         return handCompletion.getOrDefault(handIndex, false);
     }
 
+    @Override
     public void addHandBet(int handIndex, double amount) {
         betAmounts.put(handIndex, amount);
     }
 
     @Override
     public boolean allHandsComplete() {
-        if (!isHandComplete(0)) {
-            return false;
-        }
-        if (player.hasSplit()) {
-            if (!isHandComplete(1)) {
-                return false;
-            }
+        for (int i = 0; i < player.getHands().size(); i++) {
+            if (!isHandComplete(i)) return false;
         }
         return true;
     }
 
     @Override
-    public String getGameState() {
-        return gameState;
-    }
+    public String getGameState() { return gameState; }
 
     @Override
-    public void setGameState(String state) {
-        this.gameState = state;
-    }
+    public void setGameState(String state) { this.gameState = state; }
 }

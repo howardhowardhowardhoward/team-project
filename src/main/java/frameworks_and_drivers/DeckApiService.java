@@ -4,7 +4,6 @@ import entities.Card;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
-import usecase.DeckProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class DeckApiService implements DeckProvider {
     }
 
     @Override
-    public void shuffle() {
+    public void shuffleDeck() {
         try {
             Request request = new Request.Builder()
                     .url(API_URL + "/" + deckId + "/shuffle/")

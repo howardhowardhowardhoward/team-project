@@ -1,5 +1,5 @@
-package usecase.DealerAction;
+package usecase.dealeraction;
 
 public interface DealerActionInputBoundary {
-    void execute(DealerActionRequestModel requestModel);
+    void execute(DealerActionInputData inputData);
 }

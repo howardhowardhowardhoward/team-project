@@ -1,5 +1,5 @@
-package usecase.DealerAction;
+package usecase.dealeraction;
 
 public interface DealerActionOutputBoundary {
-    default void present(DealerActionResponseModel dealerActionResponseModel){}
+    void present(DealerActionOutputData outputData);
 }

@@ -1,4 +1,4 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 /**
  * Output boundary for Exit or Restart Game use case

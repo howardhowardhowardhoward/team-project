@@ -1,9 +1,9 @@
-package usecase;
+package frameworks_and_drivers;
 import java.util.List;
 import entities.*;
 
 public interface DeckProvider {
-    void shuffle();
+    void shuffleDeck();
     Card drawCard();
     List<Card> drawCards(int count);
 }

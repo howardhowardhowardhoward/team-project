@@ -1,31 +1,60 @@
-package usecase.DealerAction;
+package usecase.dealeraction;
 import entities.*;
-import usecase.DeckProvider;
+import usecase.PlayerActions.BalanceUpdater;
+import usecase.PlayerActions.GameDataAccess;
+import java.util.List;
 
-public class DealerActionInteractor implements DealerActionInputBoundary{
-    private Dealer dealer;
-    private final DeckProvider deckProvider;
-    private final DealerActionOutputBoundary presenter;
-
-    public DealerActionInteractor(Dealer dealer, DeckProvider deckProvider, DealerActionOutputBoundary presenter){
-        this.dealer = dealer;
-        this.deckProvider = deckProvider;
-        this.presenter = presenter;
+/**
+ * Interactor for DealerAction use case.
+ * Implements the dealer's automatic play logic and acts as the DealerController for PlayerAction.
+ */
+public class DealerActionInteractor implements DealerActionInputBoundary, DealerController {
+    
+    private final GameDataAccess gameDataAccess;
+    private final DealerActionOutputBoundary outputBoundary;
+    private final BalanceUpdater balanceUpdater; // Not strictly used here, but for completeness
+    
+    public DealerActionInteractor(GameDataAccess gameDataAccess, 
+                                  DealerActionOutputBoundary outputBoundary,
+                                  BalanceUpdater balanceUpdater){
+        this.gameDataAccess = gameDataAccess;
+        this.outputBoundary = outputBoundary;
+        this.balanceUpdater = balanceUpdater;
+    }
+    
+    @Override
+    public void execute(DealerActionInputData inputData) {
+        // Dealer's turn is triggered by the PlayerActionInteractor, which then handles the full settlement.
+        // This execution only handles the drawing of cards.
+        executeDealerTurn();
+        
+        // NOTE: A more complex implementation would calculate the final result and call outputBoundary.present() here.
+        // For a seamless flow with PlayerActionInteractor, we rely on the PlayerActionInteractor for final presentation.
     }
 
-    public void execute(DealerActionRequestModel dealerActionRequestModel) {
-        while (this.dealer.getHand().getTotalPoints() < 17) {
-            Card newcard = deckProvider.drawCard();
-            this.dealer.draw(newcard);
+    /**
+     * Executes the dealer's turn (implements DealerController method)
+     */
+    @Override
+    public boolean executeDealerTurn() {
+        Dealer dealer = gameDataAccess.getDealer();
+        
+        // Dealer plays until score is 17 or more
+        while (dealer.GetDealerScore() < 17) {
+            Card newCard = gameDataAccess.drawCard();
+            dealer.draw(newCard);
         }
-        Dealer dealer = this.dealer;
-        int dealerScore = dealer.GetDealerScore();
-        boolean dealerBust = (dealerScore > 21);
-        boolean dealerBlackjack = dealer.isBlackJack();
-
-        DealerActionResponseModel responseModel = new DealerActionResponseModel(dealer.getHand(),dealerScore,
-                dealerBust, dealerBlackjack);
-        presenter.present(responseModel);
+        
+        return true;
     }
 
+    @Override
+    public int getDealerFinalScore() {
+        return gameDataAccess.getDealer().GetDealerScore();
+    }
+
+    @Override
+    public boolean isDealerBust() {
+        return gameDataAccess.getDealer().isBust();
+    }
 }
