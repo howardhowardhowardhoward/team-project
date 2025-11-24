@@ -7,18 +7,19 @@ import frameworks_and_drivers.DeckProvider;
 import frameworks_and_drivers.InMemoryGameDataAccess;
 import gui.GamePanel;
 import gui.Homepage;
-import interface_adapter.update_balance.UpdateBalanceController;
-import interface_adapter.update_balance.UpdateBalancePresenter;
-
-import usecase.ExitRestartGame.*; 
+import usecase.ExitRestartGame.*;
 import usecase.PlaceBetAndDeal.*;
 import usecase.PlayerActions.*;
-import usecase.StartGame.*;
-import usecase.dealeraction.*;
-import usecase.updatebalance.*;
+import usecase.StartGame.StartGameController;
+import usecase.StartGame.StartGameInputBoundary;
+import usecase.StartGame.StartGameInteractor;
+import usecase.StartGame.StartGameOutputBoundary;
+import usecase.DealerAction.DealerActionInteractor;
+import usecase.DealerAction.DealerActionOutputBoundary;
+import usecase.DealerAction.*;
+
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
 public class Main {

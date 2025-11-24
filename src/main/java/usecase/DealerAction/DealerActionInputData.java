@@ -1,4 +1,4 @@
-package usecase.dealeraction;
+package usecase.DealerAction;
 
 /**
  * Input data for DealerAction use case.

@@ -1,4 +1,4 @@
-package usecase.dealeraction;
+package usecase.DealerAction;
 
 /**
  * Interface for triggering dealer actions.
