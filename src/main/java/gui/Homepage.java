@@ -44,7 +44,7 @@ public class Homepage extends JFrame {
         JLabel logoLabel;
         URL largeLogoUrl = getClass().getResource("/BlackjackLogoLarge.png");
         URL smallLogoUrl = getClass().getResource("/BlackjackLogo.png");
-        
+
         ImageIcon mainIcon = null;
         if (largeLogoUrl != null) {
             mainIcon = new ImageIcon(largeLogoUrl);
@@ -73,15 +73,23 @@ public class Homepage extends JFrame {
         startButton = createStyledButton("START GAME");
         exitButton = createStyledButton("EXIT");
 
+        startButton.setBackground(Color.YELLOW);
+        startButton.setOpaque(true);
+        startButton.setBorderPainted(false);
+
+        exitButton.setBackground(Color.YELLOW);
+        exitButton.setOpaque(true);
+        exitButton.setBorderPainted(false);
+
         buttonPanel.add(startButton);
         buttonPanel.add(exitButton);
 
         // Assemble Layout
-        backgroundPanel.add(Box.createVerticalGlue()); 
-        backgroundPanel.add(logoLabel);                
-        backgroundPanel.add(Box.createRigidArea(new Dimension(0, 40))); 
-        backgroundPanel.add(buttonPanel);              
-        backgroundPanel.add(Box.createVerticalGlue()); 
+        backgroundPanel.add(Box.createVerticalGlue());
+        backgroundPanel.add(logoLabel);
+        backgroundPanel.add(Box.createRigidArea(new Dimension(0, 40)));
+        backgroundPanel.add(buttonPanel);
+        backgroundPanel.add(Box.createVerticalGlue());
 
         add(backgroundPanel);
     }
