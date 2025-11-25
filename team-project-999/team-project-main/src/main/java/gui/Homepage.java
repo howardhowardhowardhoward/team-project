@@ -40,11 +40,10 @@ public class Homepage extends JFrame {
         backgroundPanel.setLayout(new BoxLayout(backgroundPanel, BoxLayout.Y_AXIS));
 
         // --- Integration Point 2: Main Cover Image ---
-        // Try to load large logo, fallback to small logo, then text
         JLabel logoLabel;
         URL largeLogoUrl = getClass().getResource("/BlackjackLogoLarge.png");
         URL smallLogoUrl = getClass().getResource("/BlackjackLogo.png");
-
+        
         ImageIcon mainIcon = null;
         if (largeLogoUrl != null) {
             mainIcon = new ImageIcon(largeLogoUrl);
@@ -58,7 +57,7 @@ public class Homepage extends JFrame {
             Image newImg = img.getScaledInstance(500, -1, Image.SCALE_SMOOTH);
             logoLabel = new JLabel(new ImageIcon(newImg));
         } else {
-            // Fallback text if image is missing
+            // Fallback text
             logoLabel = new JLabel("BLACKJACK");
             logoLabel.setFont(new Font("Serif", Font.BOLD, 60));
             logoLabel.setForeground(Color.WHITE);
@@ -73,23 +72,15 @@ public class Homepage extends JFrame {
         startButton = createStyledButton("START GAME");
         exitButton = createStyledButton("EXIT");
 
-        startButton.setBackground(Color.YELLOW);
-        startButton.setOpaque(true);
-        startButton.setBorderPainted(false);
-
-        exitButton.setBackground(Color.YELLOW);
-        exitButton.setOpaque(true);
-        exitButton.setBorderPainted(false);
-
         buttonPanel.add(startButton);
         buttonPanel.add(exitButton);
 
         // Assemble Layout
-        backgroundPanel.add(Box.createVerticalGlue());
-        backgroundPanel.add(logoLabel);
-        backgroundPanel.add(Box.createRigidArea(new Dimension(0, 40)));
-        backgroundPanel.add(buttonPanel);
-        backgroundPanel.add(Box.createVerticalGlue());
+        backgroundPanel.add(Box.createVerticalGlue()); 
+        backgroundPanel.add(logoLabel);                
+        backgroundPanel.add(Box.createRigidArea(new Dimension(0, 40))); 
+        backgroundPanel.add(buttonPanel);              
+        backgroundPanel.add(Box.createVerticalGlue()); 
 
         add(backgroundPanel);
     }
@@ -102,6 +93,11 @@ public class Homepage extends JFrame {
         btn.setBackground(new Color(218, 165, 32)); // GoldenRod
         btn.setForeground(Color.BLACK);
         btn.setBorder(BorderFactory.createRaisedBevelBorder());
+        
+        // Fix for Mac transparency
+        btn.setOpaque(true);
+        btn.setBorderPainted(false);
+        
         return btn;
     }
 
