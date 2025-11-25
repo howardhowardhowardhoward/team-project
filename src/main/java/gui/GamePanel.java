@@ -49,7 +49,7 @@ public class GamePanel extends JFrame {
         // Top left small Logo
         JPanel dealerInfoBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
         dealerInfoBox.setOpaque(false);
-        
+
         JLabel smallLogoLabel;
         if (iconUrl != null) {
             Image smallImg = new ImageIcon(iconUrl).getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
@@ -58,14 +58,14 @@ public class GamePanel extends JFrame {
             smallLogoLabel = new JLabel("[BJ]"); // Fallback
             smallLogoLabel.setForeground(Color.YELLOW);
         }
-        
+
         dealerScoreLabel = new JLabel("  Dealer: 0");
         dealerScoreLabel.setForeground(Color.WHITE);
         dealerScoreLabel.setFont(new Font("Arial", Font.BOLD, 22));
 
         dealerInfoBox.add(smallLogoLabel);
         dealerInfoBox.add(dealerScoreLabel);
-        
+
         dealerCardsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         dealerCardsPanel.setOpaque(false);
 
@@ -89,7 +89,7 @@ public class GamePanel extends JFrame {
         // Player Cards
         JPanel playerInfoPanel = new JPanel(new BorderLayout());
         playerInfoPanel.setOpaque(false);
-        
+
         playerScoreLabel = new JLabel("Player: 0");
         playerScoreLabel.setForeground(Color.WHITE);
         playerScoreLabel.setFont(new Font("Arial", Font.BOLD, 22));
@@ -114,20 +114,20 @@ public class GamePanel extends JFrame {
         betLabel = new JLabel("Bet:");
         betLabel.setForeground(Color.WHITE);
         betLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        
+
         betField = new JTextField("50", 5);
         betField.setFont(new Font("Arial", Font.PLAIN, 16));
-        
+
         // Create buttons
         betButton = createGameButton("Deal", new Color(34, 139, 34)); // Forest Green
         hitButton = createGameButton("Hit", new Color(70, 130, 180)); // Steel Blue
         standButton = createGameButton("Stand", new Color(205, 92, 92)); // Indian Red
         doubleButton = createGameButton("Double", new Color(218, 165, 32)); // GoldenRod
         splitButton = createGameButton("Split", new Color(255, 140, 0)); // Dark Orange
-        
+
         // --- Added Restart Button (to reset balance) ---
         restartButton = createGameButton("Restart", new Color(147, 112, 219)); // Medium Purple
-        
+
         exitButton = createGameButton("Exit", Color.GRAY);
 
         // Initially disable game buttons
@@ -159,17 +159,21 @@ public class GamePanel extends JFrame {
     private JButton createGameButton(String text, Color bgColor) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Arial", Font.BOLD, 14));
+
         btn.setBackground(bgColor);
         btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
+
+        // 🔥 These two lines FORCE custom color to appear:
+        btn.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        btn.setOpaque(true);
+
         return btn;
     }
-
     // --- UI Update Methods ---
 
     public void updateDealerCards(List<Card> cards, int score) {
         dealerCardsPanel.removeAll();
-        for (Card card : cards) {
+        for (Card card : cards.subList(0, cards.size())) {
             dealerCardsPanel.add(createCardLabel(card.toString()));
         }
         dealerScoreLabel.setText("  Dealer: " + score);
@@ -199,11 +203,11 @@ public class GamePanel extends JFrame {
         hitButton.setEnabled(enabled);
         standButton.setEnabled(enabled);
         doubleButton.setEnabled(enabled);
-        splitButton.setEnabled(enabled); 
+        splitButton.setEnabled(enabled);
         betButton.setEnabled(!enabled);
         betField.setEnabled(!enabled);
         // Restart and Exit always available, or available during betting phase
-        restartButton.setEnabled(!enabled); 
+        restartButton.setEnabled(!enabled);
     }
 
     public String getBetAmount() {
@@ -216,15 +220,15 @@ public class GamePanel extends JFrame {
         label.setFont(new Font("Dialog", Font.BOLD, 20));
         label.setOpaque(true);
         label.setBackground(Color.WHITE);
-        
+
         // Set color based on suit
         if (text.contains("♥") || text.contains("♦") || text.contains("HEARTS") || text.contains("DIAMONDS")) {
             label.setForeground(Color.RED);
         } else {
             label.setForeground(Color.BLACK);
         }
-        
-        label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true)); 
+
+        label.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
         label.setPreferredSize(new Dimension(80, 110));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         return label;
