@@ -2,13 +2,11 @@ package frameworks_and_drivers;
 
 import entities.Card;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 import org.json.*;
-import usecase.DeckProvider;
+import usecase.DeckProvider; // IMPORT FIX
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.io.IOException;
 
 public class DeckApiService implements DeckProvider {
@@ -23,12 +21,13 @@ public class DeckApiService implements DeckProvider {
                     .build();
 
             Response response = client.newCall(request).execute();
-            JSONObject json = new JSONObject(response.body().string());
-            deckId = json.getString("deck_id");
+            if (response.body() != null) {
+                JSONObject json = new JSONObject(response.body().string());
+                deckId = json.getString("deck_id");
+            }
         } catch(IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to initialize deck API", e);
         }
-
     }
 
     @Override
@@ -50,11 +49,13 @@ public class DeckApiService implements DeckProvider {
                     .url(API_URL + "/" + deckId + "/draw/?count=1")
                     .build();
             Response response = client.newCall(request).execute();
-            JSONObject json = new JSONObject(response.body().string());
-            JSONArray cardArray = json.getJSONArray("cards");
-            JSONObject cardJson = cardArray.getJSONObject(0);
-
-            return getCard(cardJson);
+            if (response.body() != null) {
+                JSONObject json = new JSONObject(response.body().string());
+                JSONArray cardArray = json.getJSONArray("cards");
+                JSONObject cardJson = cardArray.getJSONObject(0);
+                return getCard(cardJson);
+            }
+            throw new RuntimeException("Empty response from Draw Card API");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,24 +68,25 @@ public class DeckApiService implements DeckProvider {
                     .url(API_URL + "/" + deckId + "/draw/?count=" + count)
                     .build();
             Response response = client.newCall(request).execute();
-            JSONObject json = new JSONObject(response.body().string());
-            JSONArray cardArray = json.getJSONArray("cards");
+            if (response.body() != null) {
+                JSONObject json = new JSONObject(response.body().string());
+                JSONArray cardArray = json.getJSONArray("cards");
 
-            List<Card> cardList = new ArrayList<>();
-            for (int i = 0; i < cardArray.length(); i++) {
-                JSONObject cardJson = cardArray.getJSONObject(i);
-                Card card = getCard(cardJson);
-                cardList.add(card);
+                List<Card> cardList = new ArrayList<>();
+                for (int i = 0; i < cardArray.length(); i++) {
+                    JSONObject cardJson = cardArray.getJSONObject(i);
+                    cardList.add(getCard(cardJson));
+                }
+                return cardList;
             }
-            return cardList;
+            throw new RuntimeException("Empty response from Draw Cards API");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @NotNull
     private static Card getCard(JSONObject cardJson) {
-        String value = cardJson.getString("value");  // This is the rank ("ACE", "KING", "10", etc.)
+        String value = cardJson.getString("value");
         int valueInt = switch (value) {
             case "ACE" -> 11;
             case "KING", "QUEEN", "JACK" -> 10;
@@ -92,10 +94,6 @@ public class DeckApiService implements DeckProvider {
         };
         String suit = cardJson.getString("suit");
         String code = cardJson.getString("code");
-        // FIXED: Card constructor expects (code, suit, rank, value), not (code, suit, image, value)
-        // The 'value' field from API is the rank string, valueInt is the numeric value
-
-        return new Card(code, suit, value, valueInt);  // value = rank string, valueInt = numeric value
+        return new Card(code, suit, value, valueInt);
     }
-
 }

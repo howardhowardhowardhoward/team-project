@@ -1,10 +1,9 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 import entities.Player;
 
 /**
  * Interactor for Exit or Restart Game use case
- * Implements Use Case 5: Exit or Restart Game
  */
 public class ExitRestartGameInteractor implements ExitRestartGameInputBoundary {
     

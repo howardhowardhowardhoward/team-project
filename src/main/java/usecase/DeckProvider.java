@@ -1,6 +1,7 @@
 package usecase;
+
+import entities.Card;
 import java.util.List;
-import entities.*;
 
 public interface DeckProvider {
     void shuffle();

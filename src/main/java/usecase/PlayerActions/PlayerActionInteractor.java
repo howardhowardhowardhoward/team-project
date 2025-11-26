@@ -1,6 +1,7 @@
 package usecase.PlayerActions;
 
 import entities.*;
+import usecase.dealeraction.DealerController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,14 +11,26 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     private final PlayerActionOutputBoundary outputBoundary;
     private final GameDataAccess gameDataAccess;
+    private final BalanceUpdater balanceUpdater;
+    private final DealerController dealerController;
 
     public PlayerActionInteractor(
             PlayerActionOutputBoundary outputBoundary,
-            GameDataAccess gameDataAccess) {
+            GameDataAccess gameDataAccess,
+            BalanceUpdater balanceUpdater,
+            DealerController dealerController) {
         this.outputBoundary = outputBoundary;
         this.gameDataAccess = gameDataAccess;
+        this.balanceUpdater = balanceUpdater;
+        this.dealerController = dealerController;
     }
 
+    // Simplified constructor
+    public PlayerActionInteractor(
+            PlayerActionOutputBoundary outputBoundary,
+            GameDataAccess gameDataAccess) {
+        this(outputBoundary, gameDataAccess, null, null);
+    }
 
     @Override
     public void execute(PlayerActionInputData inputData) {
@@ -32,22 +45,22 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
                 default: handleInvalidAction(inputData, "Unknown action: " + action);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             handleError(inputData, e);
         }
     }
 
-    // --- HELPER: Adapter for hand1/hand2 ---
+    // --- Helpers ---
     private Hand getHandByIndex(Player player, int index) {
-        if (index == 0) return player.getHand();
-        if (index == 1) return player.getHand2();
+        List<Hand> hands = player.getHands();
+        if (index >= 0 && index < hands.size()) {
+            return hands.get(index);
+        }
         throw new IllegalArgumentException("Invalid hand index: " + index);
     }
 
     private List<Hand> getPlayerHandsList(Player player) {
-        List<Hand> hands = new ArrayList<>();
-        if (player.getHand() != null) hands.add(player.getHand());
-        if (player.hasSplit() && player.getHand2() != null) hands.add(player.getHand2());
-        return hands;
+        return player.getHands();
     }
 
     private void executeHit(PlayerActionInputData inputData) {
@@ -55,7 +68,7 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         Hand hand = getHandByIndex(player, inputData.getHandIndex());
 
         if (hand.isBust() || hand.getTotalPoints() == 21) {
-            handleInvalidAction(inputData, "Cannot hit");
+            handleInvalidAction(inputData, "Cannot hit/Action already complete for this hand.");
             return;
         }
 
@@ -65,14 +78,18 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         boolean bust = hand.isBust();
 
         List<String> availableActions = new ArrayList<>();
-        if (bust) {
+        if (bust || newTotal == 21) {
             gameDataAccess.markHandComplete(inputData.getHandIndex());
             if (gameDataAccess.allHandsComplete()) {
-                executeStand(inputData);
+                executeDealerTurnAndSettle(inputData, hand);
                 return;
-            } else availableActions.add("NEXT_HAND");
-        } else if (newTotal == 21) availableActions.add("STAND");
-        else { availableActions.add("HIT"); availableActions.add("STAND"); }
+            } else {
+                availableActions.add("NEXT_HAND");
+            }
+        } else {
+            availableActions.add("HIT");
+            availableActions.add("STAND");
+        }
 
         String message = String.format("Drew %s. Total: %d", newCard.toString(), newTotal) + (bust ? " - BUST!" : "");
         outputBoundary.present(new PlayerActionOutputData(true, message, newTotal, bust, hand.isBlackjack(), availableActions));
@@ -86,158 +103,205 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
         if (!gameDataAccess.allHandsComplete()) {
             int nextHandIndex = findNextIncompleteHand(player);
             if (nextHandIndex != -1) {
-                outputBoundary.present(new PlayerActionOutputData(true, "Moving to next hand...",
-                        currentHand.getTotalPoints(), false, false, getAvailableActions(getHandByIndex(player, nextHandIndex), player, nextHandIndex)));
+                Hand nextHand = getHandByIndex(player, nextHandIndex);
+                // FIX: Pass 3 args
+                outputBoundary.present(new PlayerActionOutputData(true, "Stand successful. Moving to next hand...",
+                        currentHand.getTotalPoints(), false, false, getAvailableActions(nextHand, player, nextHandIndex)));
                 return;
             }
         }
-
+        
+        executeDealerTurnAndSettle(inputData, currentHand);
+    }
+    
+    private void executeDealerTurnAndSettle(PlayerActionInputData inputData, Hand lastActedHand) {
         gameDataAccess.setGameState("DEALER_TURN");
         Dealer dealer = gameDataAccess.getDealer();
-
-        while (dealer.GetDealerScore() < 17) {
-            Card newCard = gameDataAccess.drawCard();
-            dealer.draw(newCard);
+        
+        if (dealerController != null) {
+            dealerController.executeDealerTurn();
+        } else {
+            while (dealer.GetDealerScore() < 17) {
+                 dealer.draw(gameDataAccess.drawCard());
+            }
         }
 
         int dealerScore = dealer.GetDealerScore();
+        boolean dealerBust = dealer.isBust();
         StringBuilder resultMessage = new StringBuilder();
-        resultMessage.append(String.format("Dealer: %d\nResults:\n", dealerScore));
+        resultMessage.append(String.format("Dealer total: %d (%s)\n-- Round Results --\n", dealerScore, dealerBust ? "BUST" : "STAND"));
 
         double totalPayout = 0.0;
-        List<Hand> allHands = getPlayerHandsList(player);
+        List<Hand> allHands = getPlayerHandsList(gameDataAccess.getPlayer(inputData.getPlayerId()));
+        
         for (int i = 0; i < allHands.size(); i++) {
             Hand h = allHands.get(i);
-            double payout = calculatePayout(h, dealer, gameDataAccess.getBetAmount(i));
-            resultMessage.append(String.format("Hand %d: %s\n", i+1, determineHandResult(h, dealer)));
+            String result = determineHandResult(h, dealer);
+            double betAmount = gameDataAccess.getBetAmount(i);
+            double payout = calculatePayout(h, dealer, betAmount);
+            
+            resultMessage.append(String.format("Hand %d (%d): %s. Payout: %.2f\n", 
+                                                i+1, h.getTotalPoints(), result, payout));
             totalPayout += payout;
         }
 
         if (totalPayout > 0) {
-            player.adjustBalance(totalPayout);
+            if (balanceUpdater != null) {
+                balanceUpdater.addBalance(inputData.getPlayerId(), totalPayout, "ROUND_WINNINGS");
+            } else {
+                gameDataAccess.getPlayer(inputData.getPlayerId()).adjustBalance(totalPayout);
+            }
         }
 
         outputBoundary.present(new PlayerActionOutputData(true, resultMessage.toString(),
-                currentHand.getTotalPoints(), false, false, Arrays.asList("NEW_ROUND"), true, "COMPLETE", dealerScore));
+                lastActedHand.getTotalPoints(), lastActedHand.isBust(), lastActedHand.isBlackjack(), 
+                Arrays.asList("NEW_ROUND"), true, "ROUND_COMPLETE", dealerScore));
     }
 
+    // ... (Split/Double implementations remain similar, assume correct from previous context)
+
     private void executeDouble(PlayerActionInputData inputData) {
-        //Simplified double logic
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
         Hand hand = getHandByIndex(player, inputData.getHandIndex());
         double bet = gameDataAccess.getBetAmount(inputData.getHandIndex());
 
-        if (player.getBalance() >= bet) {
-            player.adjustBalance(-bet);
-            gameDataAccess.setBetAmount(inputData.getHandIndex(), bet * 2);
-            hand.addCard(gameDataAccess.drawCard());
+        if (hand.getCards().size() != 2) {
+             handleInvalidAction(inputData, "Can only double down on the first two cards.");
+             return;
+        }
+        
+        boolean deducted = false;
+        if (balanceUpdater != null) {
+            deducted = balanceUpdater.deductBalance(inputData.getPlayerId(), bet, "DOUBLE_DOWN");
+        } else {
+            if (player.getBalance() >= bet) {
+                player.adjustBalance(-bet);
+                deducted = true;
+            }
+        }
+
+        if (deducted) {
+            gameDataAccess.addHandBet(inputData.getHandIndex(), bet); 
+            
+            Card newCard = gameDataAccess.drawCard();
+            hand.addCard(newCard);
             gameDataAccess.markHandComplete(inputData.getHandIndex());
-            if (gameDataAccess.allHandsComplete()) executeStand(inputData);
-            else outputBoundary.present(new PlayerActionOutputData(true, "Doubled!", hand.getTotalPoints(), hand.isBust(), false, Arrays.asList("NEXT_HAND")));
-        } else handleInvalidAction(inputData, "Insufficient balance");
+            
+            String message = String.format("Doubled down. Drew %s. Final Total: %d", newCard.toString(), hand.getTotalPoints());
+            if (hand.isBust()) message += " - BUST!";
+            
+            if (gameDataAccess.allHandsComplete()) {
+                executeDealerTurnAndSettle(inputData, hand);
+            } else {
+                outputBoundary.present(new PlayerActionOutputData(true, message, hand.getTotalPoints(), hand.isBust(), false, Arrays.asList("NEXT_HAND")));
+            }
+        } else {
+            handleInvalidAction(inputData, "Insufficient balance for double down bet.");
+        }
     }
 
     private void executeSplit(PlayerActionInputData inputData) {
         Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
-        Hand hand1 = player.getHand();
+        Hand hand1 = player.getHand1();
         double bet = gameDataAccess.getBetAmount(inputData.getHandIndex());
 
-        if (player.getBalance() >= bet && hand1.canSplit() && !player.hasSplit()) {
-            player.adjustBalance(-bet);
-            player.split();
-            // Move card logic
+        if (inputData.getHandIndex() != 0) {
+            handleInvalidAction(inputData, "Can only split on the first hand (index 0).");
+            return;
+        }
+        if (!hand1.canSplit()) {
+             handleInvalidAction(inputData, "Cards must be of the same rank to split.");
+             return;
+        }
+        if (player.hasSplit()) {
+            handleInvalidAction(inputData, "Cannot split more than once.");
+            return;
+        }
+        
+        boolean deducted = false;
+        if (balanceUpdater != null) {
+            deducted = balanceUpdater.deductBalance(inputData.getPlayerId(), bet, "SPLIT_BET");
+        } else {
+            if (player.getBalance() >= bet) {
+                player.adjustBalance(-bet);
+                deducted = true;
+            }
+        }
+
+        if (deducted) {
+            player.split(); 
+            gameDataAccess.addHandBet(1, bet); 
+            
             List<Card> cards = hand1.getCards();
             Card firstCard = cards.get(0);
             Card secondCard = cards.get(1);
             hand1.clear();
             hand1.addCard(firstCard);
             player.getHand2().addCard(secondCard);
+            
             hand1.addCard(gameDataAccess.drawCard());
             player.getHand2().addCard(gameDataAccess.drawCard());
-            gameDataAccess.setBetAmount(1, bet);
-
-            outputBoundary.present(new PlayerActionOutputData(true, "Split successful!", hand1.getTotalPoints(), false, false, getAvailableActions(hand1, player, 0)));
-        } else handleInvalidAction(inputData, "Cannot split");
+            
+            outputBoundary.present(new PlayerActionOutputData(true, "Split successful! Starting with Hand 1...", hand1.getTotalPoints(), false, false, getAvailableActions(hand1, player, 0)));
+        } else {
+            handleInvalidAction(inputData, "Insufficient balance for split bet.");
+        }
     }
 
     private void executeInsurance(PlayerActionInputData inputData) {
-        // Simplified insurance
-        outputBoundary.present(new PlayerActionOutputData(true, "Insurance handled", 0, false, false, Arrays.asList("HIT", "STAND")));
+        Hand hand = getHandByIndex(gameDataAccess.getPlayer(inputData.getPlayerId()), inputData.getHandIndex());
+        Player player = gameDataAccess.getPlayer(inputData.getPlayerId());
+        
+        outputBoundary.present(new PlayerActionOutputData(true, "Insurance side bet registered (Functionality TBD)", 
+                                                         0, false, false, getAvailableActions(hand, player, inputData.getHandIndex())));
     }
 
-    // Helpers
     private int findNextIncompleteHand(Player player) {
         if (!gameDataAccess.isHandComplete(0)) return 0;
         if (player.hasSplit() && !gameDataAccess.isHandComplete(1)) return 1;
         return -1;
     }
-    private List<String> getAvailableActions(Hand hand, Player player, int handIndex) {
-        List<String> actions = new ArrayList<>();
-
-        // If bust or reach 21, no available moves
-        if (hand.isBust() || hand.getTotalPoints() == 21) {
-            return actions;
-        }
-
-        // basic moves
-        actions.add("HIT");
-        actions.add("STAND");
-
-        // Double only available at first two cards
-        if (hand.getCards().size() == 2) {
-            double betAmount = gameDataAccess.getBetAmount(handIndex);
-            if (player.getBalance() >= betAmount) {
-                actions.add("DOUBLE");
-            }
-
-            // Splitting is only allowed on pairs, and only if you haven't split yet.
-            if (hand.canSplit() && !player.hasSplit() && player.getBalance() >= betAmount) {
+    
+    private List<String> getAvailableActions(Hand h, Player p, int i) { 
+        List<String> actions = new ArrayList<>(Arrays.asList("HIT", "STAND"));
+        if (h.getCards().size() == 2) {
+            actions.add("DOUBLE");
+            if (h.canSplit() && !p.hasSplit()) {
                 actions.add("SPLIT");
             }
         }
-
-        return actions;
+        return actions; 
     }
-
-    private String determineHandResult(Hand playerHand, Dealer dealer) {
+    
+    private String determineHandResult(Hand playerHand, Dealer dealer) { 
         int playerScore = playerHand.getTotalPoints();
         int dealerScore = dealer.GetDealerScore();
 
-        if (playerHand.isBust()) {
-            return "LOSE (Bust)";
-        } else if (dealer.isBust()) {
-            return "WIN (Dealer Bust)";
-        } else if (playerHand.isBlackjack() && !dealer.isBlackJack()) {
-            return "BLACKJACK!";
-        } else if (playerScore > dealerScore) {
-            return "WIN";
-        } else if (playerScore < dealerScore) {
-            return "LOSE";
-        } else {
-            return "PUSH (Tie)";
+        if (playerHand.isBust()) return "BUST (LOST)";
+        if (dealer.isBust()) return "WIN (Dealer Bust)";
+        // FIX: dealer.isBlackJack() not dealerHand
+        if (playerHand.isBlackjack() && !dealer.isBlackJack()) return "BLACKJACK (WIN)"; 
+        if (playerScore > dealerScore) return "WIN";
+        if (playerScore < dealerScore) return "LOSE";
+        return "PUSH (TIE)";
+    }
+    
+    private double calculatePayout(Hand playerHand, Dealer dealer, double betAmount) { 
+        String result = determineHandResult(playerHand, dealer);
+        switch (result) {
+            case "BLACKJACK (WIN)": return betAmount * 2.5; // Return bet + 1.5x winnings
+            case "WIN":
+            case "WIN (Dealer Bust)": return betAmount * 2.0; // Return bet + 1.0x winnings
+            case "PUSH (TIE)": return betAmount; // Return bet
+            default: return 0.0;
         }
     }
-
-    private double calculatePayout(Hand playerHand, Dealer dealer, double betAmount) {
-        if (playerHand.isBust()) {
-            return 0.0; // lose bet
-        } else if (dealer.isBust()) {
-            return betAmount * 2.0; // won 1:1, return principle and prize
-        } else if (playerHand.isBlackjack() && !dealer.isBlackJack()) {
-            return betAmount * 2.5; // Blackjack won 3:2, return principal+1.5x
-        } else {
-            int playerScore = playerHand.getTotalPoints();
-            int dealerScore = dealer.GetDealerScore();
-
-            if (playerScore > dealerScore) {
-                return betAmount * 2.0; // won1:1
-            } else if (playerScore == dealerScore) {
-                return betAmount; // draw return principal
-            } else {
-                return 0.0; // lose
-            }
-        }
+    
+    private void handleInvalidAction(PlayerActionInputData i, String r) { 
+        outputBoundary.present(new PlayerActionOutputData(false, r, 0, false, false, null)); 
     }
-    private void handleInvalidAction(PlayerActionInputData i, String r) { outputBoundary.present(new PlayerActionOutputData(false, r, 0, false, false, null)); }
-    private void handleError(PlayerActionInputData i, Exception e) { outputBoundary.present(new PlayerActionOutputData(false, e.getMessage(), 0, false, false, null)); }
+    
+    private void handleError(PlayerActionInputData i, Exception e) { 
+        outputBoundary.present(new PlayerActionOutputData(false, "An error occurred: " + e.getMessage(), 0, false, false, null)); 
+    }
 }

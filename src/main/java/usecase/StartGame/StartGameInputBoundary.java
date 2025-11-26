@@ -1,5 +1,5 @@
 package usecase.StartGame;
 
 public interface StartGameInputBoundary {
-    void execute(StartGameInputData inputData) throws Exception;
+    void execute(StartGameInputData inputData);
 }

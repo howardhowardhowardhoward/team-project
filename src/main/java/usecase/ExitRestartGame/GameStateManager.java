@@ -1,4 +1,4 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 /**
  * Manages game state for Exit/Restart operations

@@ -1,47 +1,44 @@
 package entities;
 
-/**
- * Player Entity.
- * Represents a user in the game, managing their balance and hands.
- * Fixed: Logic adjusted to support hand1/hand2 structure and fix initialization bugs.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player {
     private double balance;
-
-    // Primary hand (always exists)
     private Hand hand1;
-
-    // Secondary hand (only exists after splitting, otherwise null)
     private Hand hand2;
 
-    /**
-     * Constructor.
-     * @param initialBalance The starting chips for the player.
-     */
     public Player(double initialBalance) {
         this.balance = initialBalance;
         this.hand1 = new Hand();
-        this.hand2 = null; // FIXED: Ensure this is null initially!
+        this.hand2 = null;
     }
 
-    public void setHand2(Hand hand){
-        this.hand2 = hand;
-    }
-
-    // --- Compatibility Method ---
     public Hand getHand() {
         return this.hand1;
+    }
+
+    public Hand getHand1() {
+        return hand1;
     }
 
     public Hand getHand2() {
         return hand2;
     }
 
+    public List<Hand> getHands() {
+        List<Hand> hands = new ArrayList<>();
+        hands.add(hand1);
+        if (hand2 != null) {
+            hands.add(hand2);
+        }
+        return hands;
+    }
+
     public boolean hasSplit() {
         return hand2 != null;
     }
 
-    // --- Betting & Balance Logic ---
     public void adjustBalance(double amount) {
         this.balance += amount;
     }
@@ -60,11 +57,11 @@ public class Player {
         return balance;
     }
 
-    // --- Game Logic ---
     public boolean isBlackjack() {
         return this.hand1.isBlackjack();
     }
 
+    // Ensure clearHands method appears only once
     public void clearHands() {
         this.hand1.clear();
         if (this.hand2 != null) {
@@ -78,6 +75,20 @@ public class Player {
             throw new IllegalStateException("Cannot split more than once.");
         }
         this.hand2 = new Hand();
-        // Logic to move card will be handled by Interactor
+    }
+    
+    // Added for compatibility with PlayerActionInteractor split logic
+    public void addHand(Hand hand) {
+        if (this.hand2 != null) {
+             throw new IllegalStateException("Already split");
+        }
+        this.hand2 = hand;
+    }
+    
+    // Added for compatibility with PlayerActionInteractor getHand(index) logic
+    public Hand getHand(int index) {
+        if (index == 0) return hand1;
+        if (index == 1 && hand2 != null) return hand2;
+        throw new IndexOutOfBoundsException("Invalid hand index: " + index);
     }
 }

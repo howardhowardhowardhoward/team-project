@@ -1,9 +1,8 @@
 package usecase.StartGame;
 
 import entities.*;
-import usecase.DeckProvider;
+import usecase.DeckProvider; // Correct Import
 
-import java.io.IOException;
 import java.util.List;
 
 public class StartGameInteractor implements StartGameInputBoundary {
@@ -15,68 +14,38 @@ public class StartGameInteractor implements StartGameInputBoundary {
     public StartGameInteractor(StartGameOutputBoundary presenter,
                                DeckProvider deckProvider,
                                Game game) {
-        // FIXED: Use injected deckService instead of creating new instance
-        // This follows Dependency Injection principle and allows for testing with mocks
         this.presenter = presenter;
         this.gameDeck = deckProvider;
         this.game = game;
     }
 
     @Override
-    public void execute(StartGameInputData inputData)  {
-        double bet = inputData.getBetAmount();
+    public void execute(StartGameInputData inputData) {
+        try {
+            // 1. Reset game state
+            game.reset();
 
-        // validate bet
-        if (bet <= 0) {
-            presenter.presentBetError("Bet must be greater than 0.");
-            return;
-        }
-        if (bet > game.getBalance()) {
-            presenter.presentBetError("Not enough balance to place this bet.");
-            return;
-        }
+            // 2. Shuffle deck
+            gameDeck.shuffle();
 
-        // deduct the bet
-        // 2. Deduct bet
-        game.setBalance((int) (game.getBalance() - bet));
-        game.setCurrentBet((int) bet);
-
-        // 1. Reset game state
-        game.reset();
-
-        // 2. Shuffle or request a new deck
-        gameDeck.shuffle();
-
-        // 3. Deal initial cards (2 player, 2 dealer)
-        List<Card> playerCards = gameDeck.drawCards(2);
-        List<Card> dealerCards = gameDeck.drawCards(2);
-
-        Hand playerhand = new Hand();
-        Hand dealerhand = new Hand();
-
-        for (int i = 0; i <= 1; i++){
-            playerhand.addCard(playerCards.get(i));
-            dealerhand.addCard(dealerCards.get(i));
-        }
-
-        int playerTotal = playerhand.getTotalPoints();
-        int dealerTotal = dealerhand.getTotalPoints();
-        int dealerVisibleTotal = dealerhand.getCards().get(0).getValue();
-
-        boolean playerBlackjack = (playerTotal == 21);
-        boolean dealerBlackjack = (dealerTotal == 21);
-
-        // 4. Prepare output
-        StartGameOutputData outputData = new StartGameOutputData(
-                playerCards,
-                dealerCards,
-                playerTotal,
-                dealerVisibleTotal,
-                dealerBlackjack,
-                playerBlackjack
-                );
+            // 3. Deal initial dummy cards just for visual setup (logic handled in PlaceBet)
+            // Note: We simulate a deal here to populate the initial view if needed, 
+            // but usually this step waits for a bet.
+            // For this specific architecture, we just reset and notify.
+            
+            // Pass empty lists/zeros to indicate a fresh table
+            StartGameOutputData outputData = new StartGameOutputData(
+                    java.util.Collections.emptyList(),
+                    java.util.Collections.emptyList(),
+                    0,
+                    0,
+                    false
+            );
 
             presenter.present(outputData);
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 }

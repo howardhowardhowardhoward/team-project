@@ -1,9 +1,12 @@
 package usecase.PlaceBetAndDeal;
 
 public class PlaceBetAndDealController {
+    
+    // Use interface type
     private final PlaceBetAndDealInputBoundary interactor;
 
-    public PlaceBetAndDealController(PlaceBetAndDealInteractor interactor) {
+    // Constructor receives interface type
+    public PlaceBetAndDealController(PlaceBetAndDealInputBoundary interactor) {
         this.interactor = interactor;
     }
 
