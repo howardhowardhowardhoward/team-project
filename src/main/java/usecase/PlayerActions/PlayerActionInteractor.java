@@ -90,7 +90,55 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     @Override
     public void doubleDown() {
-        presenter.presentError("Double down not implemented yet");
+        if (player.getCurrentBet() > player.getBalance()) {
+            presenter.presentError("Insufficient funds to double down.");
+        }
+        else if (player.getHand(0).getCards().size() > 2) {
+            presenter.presentError("You cannot double down after hitting.");
+        }
+        else {
+            double balance = player.getBalance();
+            double betAmount = player.getCurrentBet();
+            double newBalance = balance - betAmount;
+            double newBetAmount = betAmount * 2;
+
+            // draw just one more card
+            Hand hand = player.getHand(0);
+            Card drawnCard = deck.drawCard();
+            hand.addCard(drawnCard);
+
+            int playerTotal = hand.getTotalPoints();
+            boolean bust = hand.isBust();
+            int dealerVisibleTotal = dealer.getHand().getCards().get(1).getValue();
+
+            List<String> newPlayerImages = new ArrayList<>();
+            for (Card c : hand.getCards()) {
+                newPlayerImages.add(c.getImage());
+            }
+
+            // update Player
+            player.setBalance(newBalance);
+            player.setCurrentBet(newBetAmount);
+
+            PlayerActionOutputData outputData = new PlayerActionOutputData(
+                    newPlayerImages,
+                    null,
+                    playerTotal,
+                    dealerVisibleTotal,
+                    bust,
+                    hand.isBlackjack(),
+                    true, // actionComplete true if doubling down
+                    newBalance,
+                    newBetAmount
+            );
+
+            presenter.present(outputData);
+
+            // If player not bust, trigger dealer play on a separate thread so GUI stays responsive
+            if (!bust) {
+                new Thread(dealerInteractor::dealerPlay).start();
+            }
+        }
     }
 
     @Override

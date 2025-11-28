@@ -153,6 +153,8 @@ public class PlayerActionScreen extends JFrame {
                     updateBalance();
                     updateBet();
                 }
+                case "balance" -> updateBalance();
+                case "bet" -> updateBet();
                 case "error" -> {
                     JOptionPane.showMessageDialog(this, playerViewModel.getErrorMessage());
                 }
