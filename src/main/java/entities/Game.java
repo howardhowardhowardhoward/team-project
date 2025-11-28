@@ -1,24 +1,26 @@
 package entities;
 
-import frameworks_and_drivers.DeckApiService;
-import java.util.List;
-
 public class Game {
     private Player player;
     private Dealer dealer;
     private Deck gameDeck;
-    private List<Card> playerCard;
-    private List<Card> dealerCard;
     private int balance;
     private int currentBet;
     private boolean roundActive;
 
-    public Game() {
-        DeckApiService deckApiService = new DeckApiService();
-        this.gameDeck = new Deck(deckApiService);
+    public Game(Deck gameDeck) {
+        this.gameDeck = gameDeck;
         this.player = new Player(1000);
         this.dealer = new Dealer(gameDeck); // Dealer also has a Hand
         this.balance = 1000; // starting balance
+        this.roundActive = false;
+    }
+
+    public Game(Deck gameDeck, double loadedBalance) {
+        this.gameDeck = gameDeck;
+        this.player = new Player(loadedBalance);
+        this.dealer = new Dealer(gameDeck);
+        this.balance = (int) loadedBalance;
         this.roundActive = false;
     }
 
@@ -32,6 +34,10 @@ public class Game {
 
     public int getBalance() {
         return balance;
+    }
+
+    public Deck getDeck() {
+        return gameDeck;
     }
 
     public int getCurrentBet() {
@@ -84,8 +90,7 @@ public class Game {
 
     /** Check initial blackjack case for player or dealer */
     public boolean checkInitialBlackjack() {
-        return player.isBlackjack() || dealer.isBlackJack();
+        return player.isBlackjack(0) || dealer.isBlackJack();
     }
+}
 
-}
-}

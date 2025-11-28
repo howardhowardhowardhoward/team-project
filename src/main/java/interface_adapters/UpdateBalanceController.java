@@ -1,4 +1,4 @@
-package interface_adapter.update_balance;
+package interface_adapters;
 
 import usecase.updatebalance.UpdateBalanceInputBoundary;
 import usecase.updatebalance.UpdateBalanceInputData;

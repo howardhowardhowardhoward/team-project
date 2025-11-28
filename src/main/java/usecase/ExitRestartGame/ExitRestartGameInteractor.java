@@ -1,4 +1,4 @@
-package usecase;
+package usecase.ExitRestartGame;
 
 import entities.Player;
 

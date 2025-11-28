@@ -14,21 +14,25 @@ import java.io.IOException;
 public class DeckApiService implements DeckProvider {
     private final String API_URL = "https://deckofcardsapi.com/api/deck";
     private final OkHttpClient client = new OkHttpClient();
-    String deckId;
+    private String deckId;
 
     public DeckApiService() {
+        this.deckId = getNewDeck();
+    }
+
+    private String getNewDeck() {
         try {
             Request request = new Request.Builder()
-                    .url(API_URL + "/new/shuffle/?deck_count=1")
+                    .url(API_URL + "/new/shuffle/?deck_count=6")
                     .build();
 
             Response response = client.newCall(request).execute();
             JSONObject json = new JSONObject(response.body().string());
-            deckId = json.getString("deck_id");
+            response.close();
+            return json.getString("deck_id");
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -39,7 +43,7 @@ public class DeckApiService implements DeckProvider {
                     .build();
             client.newCall(request).execute();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error shuffling deck", e);
         }
     }
 
@@ -94,7 +98,7 @@ public class DeckApiService implements DeckProvider {
         String code = cardJson.getString("code");
         String image = cardJson.getString("image");
 
-        return new Card(code, suit, image, valueInt);
+        return new Card(code, suit, value, valueInt, image);
     }
 
 }

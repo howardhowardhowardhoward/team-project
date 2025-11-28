@@ -1,4 +1,6 @@
-package usecase;
+package usecase.ExitRestartGame;
+
+import interface_adapters.ExitRestartGameController;
 
 /**
  * Main class for Exit or Restart Game use case

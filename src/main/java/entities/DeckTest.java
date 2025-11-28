@@ -11,7 +11,7 @@ public class DeckTest {
         for (int i = 0; i < 52; i++) {
             System.out.println(deck.drawCard());
         }
-        deck.shuffle();
+        deck.shuffleDeck();
         System.out.println("Cards shuffled, order should be different");
         System.out.println();
         for (int i = 0; i < 52; i++) {

@@ -16,7 +16,7 @@ public class Dealer {
         this.score += card.getValue();
     }
 
-    public int GetDealerScore(){
+    public int getDealerScore(){
         return this.score;
     }
 
@@ -26,8 +26,8 @@ public class Dealer {
 
     public void play(){
         while (this.score < 17){
-            Card newcard = this.deck.drawCard();
-            this.draw(newcard);
+            Card newCard = this.deck.drawCard();
+            this.draw(newCard);
         }
     }
 

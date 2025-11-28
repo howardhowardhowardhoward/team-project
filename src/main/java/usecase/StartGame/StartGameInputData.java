@@ -1,5 +1,5 @@
 package usecase.StartGame;
 
 public class StartGameInputData {
-    // You can add fields later if needed
+    // Add fields later if needed
 }

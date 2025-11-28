@@ -1,4 +1,4 @@
-package usecase;
+package usecase.PlayerActions;
 
 import entities.Card;
 import entities.Dealer;

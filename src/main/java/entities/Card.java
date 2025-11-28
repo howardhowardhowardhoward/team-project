@@ -5,12 +5,14 @@ public class Card {
     private final String suit;   // Hearts, Diamonds, Clubs, Spades
     private final String rank;   // point on card
     private final int value;     // Value in game
+    private final String image;
 
-    public Card(String code, String suit, String rank, int value) {
+    public Card(String code, String suit, String rank, int value, String image) {
         this.code = code;
         this.suit = suit;
         this.rank = rank;
         this.value = value;
+        this.image = image;
     }
 
     public String getCode() {
@@ -28,6 +30,8 @@ public class Card {
     public int getValue() {
         return value;
     }
+
+    public String getImage() { return image; }
 
     /** GUI */
     @Override

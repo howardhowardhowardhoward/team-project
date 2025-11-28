@@ -2,14 +2,13 @@ package entities;
 import java.util.*;
 
 public class Deck {
-    private Stack<Card> cards = new Stack<>();
-    private DeckProvider deckProvider;
+    private final DeckProvider deckProvider;
 
     public Deck(DeckProvider deckProvider) {
         this.deckProvider = deckProvider;
     }
 
-    public void shuffle() {
+    public void shuffleDeck() {
         deckProvider.shuffleDeck();
     }
 
