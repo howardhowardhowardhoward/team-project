@@ -17,3 +17,4 @@ public class LoadGamePresenter implements LoadGameOutputBoundary {
         viewModel.setMessage(outputData.getMessage());
     }
 }
+
