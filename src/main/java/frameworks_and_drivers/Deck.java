@@ -1,7 +1,6 @@
 package frameworks_and_drivers;
 
 import java.util.*;
-import entities.Card;
 
 // Critical Fix: Add implements DeckProvider
 public class Deck implements DeckProvider {

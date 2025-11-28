@@ -1,6 +1,5 @@
 package frameworks_and_drivers;
 
-import entities.Card;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
