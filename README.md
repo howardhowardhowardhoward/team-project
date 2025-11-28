@@ -13,4 +13,4 @@ your team will find it easier to prepare for the final presentation
 at the end of the term.
 
 
-Note: The reason why "HarryMaguire" has so many commits is because he made a lot of unnecessary commits when trying to reorganize the files.
+Note: The reason why "HarryMaguire" has so many commits is because he made a lot of unnecessary commits when trying to reorganize the files. As a result, the number is heavily inflated.
