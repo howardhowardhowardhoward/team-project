@@ -5,16 +5,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import interface_adapters.DealerActionController;
-import interface_adapters.DealerActionPresenter;
-import interface_adapters.DealerActionViewModel;
-import interface_adapters.PlaceBetAndDealController;
+import frameworks_and_drivers.LoadGame.LoadGameDataAccess;
+import interface_adapters.dealeraction.DealerActionController;
+import interface_adapters.dealeraction.DealerActionPresenter;
+import interface_adapters.dealeraction.DealerActionViewModel;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealController;
 import usecase.PlaceBetAndDeal.PlaceBetAndDealInputData;
-import interface_adapters.PlaceBetAndDealViewModel;
-import interface_adapters.PlayerActionController;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
+import interface_adapters.PlayerActions.PlayerActionController;
 import usecase.PlayerActions.PlayerActionInteractor;
-import interface_adapters.PlayerActionPresenter;
-import interface_adapters.PlayerActionViewModel;
+import interface_adapters.PlayerActions.PlayerActionPresenter;
+import interface_adapters.PlayerActions.PlayerActionViewModel;
 import usecase.dealeraction.*;
 
 public class BetScreen extends JFrame implements ActionListener {

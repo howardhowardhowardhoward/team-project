@@ -1,6 +1,13 @@
 package frameworks_and_drivers;
 
-import interface_adapters.*;
+import frameworks_and_drivers.PlaceBetAndDeal.PlaceBetAndDealDataAccess;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealController;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealPresenter;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
+import interface_adapters.PlayerActions.PlayerActionController;
+import interface_adapters.PlayerActions.PlayerActionViewModel;
+import interface_adapters.dealeraction.DealerActionController;
+import interface_adapters.dealeraction.DealerActionViewModel;
 import usecase.PlaceBetAndDeal.*;
 import entities.Deck;
 import entities.Dealer;

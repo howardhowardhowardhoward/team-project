@@ -3,7 +3,12 @@ package frameworks_and_drivers;
 import javax.swing.*;
 import java.awt.*;
 
-import interface_adapters.*;
+import frameworks_and_drivers.PlaceBetAndDeal.PlaceBetAndDealDataAccess;
+import interface_adapters.LoadGame.LoadGameController;
+import interface_adapters.LoadGame.LoadGameViewModel;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealController;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealPresenter;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
 import interface_adapters.StartGame.StartGameController;
 import interface_adapters.StartGame.StartGameViewModel;
 import usecase.PlaceBetAndDeal.*;
