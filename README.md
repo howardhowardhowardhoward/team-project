@@ -11,4 +11,6 @@ The readme should include information such as:
 By keeping this README up-to-date,
 your team will find it easier to prepare for the final presentation
 at the end of the term.
-jnfr;gkja
+
+
+Note: The reason why "HarryMaguire" has so many commits is because he made a lot of unnecessary commits when trying to reorganize the files.
