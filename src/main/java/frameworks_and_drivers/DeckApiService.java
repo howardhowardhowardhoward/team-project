@@ -1,7 +1,5 @@
 package frameworks_and_drivers;
 
-import entities.Card;
-import entities.DeckProvider;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
@@ -14,25 +12,21 @@ import java.io.IOException;
 public class DeckApiService implements DeckProvider {
     private final String API_URL = "https://deckofcardsapi.com/api/deck";
     private final OkHttpClient client = new OkHttpClient();
-    private String deckId;
+    String deckId;
 
     public DeckApiService() {
-        this.deckId = getNewDeck();
-    }
-
-    private String getNewDeck() {
         try {
             Request request = new Request.Builder()
-                    .url(API_URL + "/new/shuffle/?deck_count=6")
+                    .url(API_URL + "/new/shuffle/?deck_count=1")
                     .build();
 
             Response response = client.newCall(request).execute();
             JSONObject json = new JSONObject(response.body().string());
-            response.close();
-            return json.getString("deck_id");
+            deckId = json.getString("deck_id");
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
@@ -43,7 +37,7 @@ public class DeckApiService implements DeckProvider {
                     .build();
             client.newCall(request).execute();
         } catch (IOException e) {
-            throw new RuntimeException("Error shuffling deck", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -88,7 +82,7 @@ public class DeckApiService implements DeckProvider {
 
     @NotNull
     private static Card getCard(JSONObject cardJson) {
-        String value = cardJson.getString("value");
+        String value = cardJson.getString("value");  // This is the rank ("ACE", "KING", "10", etc.)
         int valueInt = switch (value) {
             case "ACE" -> 11;
             case "KING", "QUEEN", "JACK" -> 10;
@@ -96,9 +90,10 @@ public class DeckApiService implements DeckProvider {
         };
         String suit = cardJson.getString("suit");
         String code = cardJson.getString("code");
-        String image = cardJson.getString("image");
+        // FIXED: Card constructor expects (code, suit, rank, value), not (code, suit, image, value)
+        // The 'value' field from API is the rank string, valueInt is the numeric value
 
-        return new Card(code, suit, value, valueInt, image);
+        return new Card(code, suit, value, valueInt);  // value = rank string, valueInt = numeric value
     }
 
 }
