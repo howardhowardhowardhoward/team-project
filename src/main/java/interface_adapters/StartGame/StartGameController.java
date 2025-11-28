@@ -3,12 +3,11 @@ package interface_adapters.StartGame;
 import entities.*;
 import usecase.StartGame.StartGameInputBoundary;
 import usecase.StartGame.StartGameInputData;
-import usecase.StartGame.StartGameInteractor;
 
 public class StartGameController {
     private final StartGameInputBoundary interactor;
 
-    public StartGameController(StartGameInteractor interactor) {
+    public StartGameController(StartGameInputBoundary interactor) {
         this.interactor = interactor; // upcasting
     }
 
