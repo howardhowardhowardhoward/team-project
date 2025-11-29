@@ -5,6 +5,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import entities.Dealer;
+import entities.Deck;
+import entities.Hand;
+import entities.Player;
 import frameworks_and_drivers.LoadGame.LoadGameDataAccess;
 import interface_adapters.dealeraction.DealerActionController;
 import interface_adapters.dealeraction.DealerActionPresenter;
@@ -280,10 +284,7 @@ public class BetScreen extends JFrame implements ActionListener {
     }
 
     private void restartGame() {
-        JOptionPane.showMessageDialog(this, "Restarting game, setting balance to $1000...");
-        // You can reset balance and reload BetScreen
-        viewModel.setBalance(1000);
-        viewModel.setBetAmount(0);
+        controller.restartGame();
+        JOptionPane.showMessageDialog(this, "Game restarted! Balance: $1,000");
     }
-
 }

@@ -100,6 +100,15 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
         presenter.presentBetUpdated(player.getBalance(), reservedBet);
     }
 
+    @Override
+    public void restartGame() {
+        Player player = dataAccess.getPlayer();
+        player.setBalance(1000);
+        player.setCurrentBet(0);
+        reservedBet = 0;
+        presenter.presentBetUpdated(player.getBalance(), reservedBet);
+    }
+
     public Deck getDeck() {
         return dataAccess.getDeck();
     }
@@ -109,6 +118,6 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
     }
 
     public Player getPlayer() {
-        return  dataAccess.getPlayer();
+        return dataAccess.getPlayer();
     }
 }
