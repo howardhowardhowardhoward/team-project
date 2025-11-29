@@ -111,18 +111,9 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
     @Override
     public void restartGame() {
         Player player = dataAccess.getPlayer();
-        Dealer dealer = dataAccess.getDealer();
-        Deck deck = dataAccess.getDeck();
-
-        PlaceBetAndDealViewModel viewModel = new PlaceBetAndDealViewModel();
-        ExitRestartGamePresenter restartPresenter = new ExitRestartGamePresenter(viewModel);
-        ExitRestartGameDataAccess restartDataAccess = new ExitRestartGame(player, deck, dealer);
-        ExitRestartGameInteractor restartInteractor = new  ExitRestartGameInteractor(restartPresenter,
-                restartDataAccess);
-        ExitRestartGameController restartController = new ExitRestartGameController(restartInteractor);
-        restartController.handleRestartGame(new ExitRestartGameInputData());
+        player.setBalance(1000);
+        player.setCurrentBet(0);
         reservedBet = 0;
-
         presenter.presentBetUpdated(player.getBalance(), reservedBet);
     }
 
