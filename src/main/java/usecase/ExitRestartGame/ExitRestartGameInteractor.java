@@ -1,6 +1,8 @@
 package usecase.ExitRestartGame;
 
+import entities.Deck;
 import entities.Player;
+import entities.Dealer;
 
 /**
  * Interactor for Exit or Restart Game use case
@@ -8,75 +10,40 @@ import entities.Player;
  */
 public class ExitRestartGameInteractor implements ExitRestartGameInputBoundary {
     
-    private final ExitRestartGameOutputBoundary outputBoundary;
+    private final ExitRestartGameOutputBoundary presenter;
     private final ExitRestartGameDataAccess dataAccess;
-    private final GameStateManager gameStateManager;
     
-    public ExitRestartGameInteractor(ExitRestartGameOutputBoundary outputBoundary,
-                                   ExitRestartGameDataAccess dataAccess,
-                                   GameStateManager gameStateManager) {
-        this.outputBoundary = outputBoundary;
+    public ExitRestartGameInteractor(ExitRestartGameOutputBoundary presenter,
+                                     ExitRestartGameDataAccess dataAccess) {
+        this.presenter = presenter;
         this.dataAccess = dataAccess;
-        this.gameStateManager = gameStateManager;
     }
     
     @Override
-    public void executeExit() {
-        try {
-            // Main Flow: Exit the game
-            gameStateManager.setGameExited(true);
-            
-            // Create success output
-            ExitRestartGameOutputData outputData = new ExitRestartGameOutputData(
-                true,
-                "Game exited successfully. Thank you for playing!",
-                0.0,
-                true,
-                false
-            );
-            
-            outputBoundary.presentExitResult(outputData);
-            
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to exit game: " + e.getMessage());
-        }
+    public void executeExit(ExitRestartGameInputData inputData) {
+
     }
     
     @Override
-    public void executeRestart() {
-        try {
-            String playerId = dataAccess.getCurrentPlayerId();
-            Player player = dataAccess.getPlayer(playerId);
-            
-            if (player == null) {
-                outputBoundary.presentError("Player not found");
-                return;
-            }
-            
-            // Alternate Flow: Reset balance to $1000
-            double currentBalance = player.getBalance();
-            double adjustment = 1000.0 - currentBalance;
-            player.adjustBalance(adjustment);
-            
-            // Save the updated player
-            dataAccess.savePlayer(player);
-            
-            // Reset game state
-            gameStateManager.resetGameState();
-            
-            // Create success output
-            ExitRestartGameOutputData outputData = new ExitRestartGameOutputData(
-                true,
-                "Game restarted successfully! Balance reset to $1000.",
-                1000.0,
-                false,
-                true
-            );
-            
-            outputBoundary.presentRestartResult(outputData);
-            
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to restart game: " + e.getMessage());
-        }
+    public void executeRestart(ExitRestartGameInputData inputData) {
+        Player player = dataAccess.getPlayer();
+        player.setBalance(1000);
+        player.setCurrentBet(0);
+
+        ExitRestartGameOutputData outputData = new ExitRestartGameOutputData("Restart successful",
+                1000, 0);
+        presenter.presentRestartResult(outputData);
+    }
+
+    public Deck getDeck() {
+        return dataAccess.getDeck();
+    }
+
+    public Player getPlayer() {
+        return dataAccess.getPlayer();
+    }
+
+    public Dealer getDealer() {
+        return dataAccess.getDealer();
     }
 }

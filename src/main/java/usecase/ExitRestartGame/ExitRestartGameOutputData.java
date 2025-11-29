@@ -4,26 +4,18 @@ package usecase.ExitRestartGame;
  * Output data for Exit or Restart Game use case
  */
 public class ExitRestartGameOutputData {
-    private final boolean success;
     private final String message;
     private final double newBalance;
-    private final boolean gameExited;
-    private final boolean gameRestarted;
+    private final double newBetAmount;
     
-    public ExitRestartGameOutputData(boolean success, String message, 
-                                   double newBalance, boolean gameExited, 
-                                   boolean gameRestarted) {
-        this.success = success;
+    public ExitRestartGameOutputData(String message, double newBalance, double newBetAmount) {
         this.message = message;
         this.newBalance = newBalance;
-        this.gameExited = gameExited;
-        this.gameRestarted = gameRestarted;
+        this.newBetAmount = newBetAmount;
     }
     
     // Getters
-    public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
     public double getNewBalance() { return newBalance; }
-    public boolean isGameExited() { return gameExited; }
-    public boolean isGameRestarted() { return gameRestarted; }
+    public double  getNewBetAmount() { return newBetAmount; }
 }
