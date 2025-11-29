@@ -238,10 +238,13 @@ public class BetScreen extends JFrame implements ActionListener {
 
     private void updateBalance() {
         balanceLabel.setText("Balance: $" + (int) viewModel.getBalance());
+        checkAutoRestart();
     }
 
     private void updateBet() {
-        betLabel.setText("Bet: $" + (int) viewModel.getBetAmount());
+        int bet = (int) viewModel.getBetAmount();
+        betLabel.setText("Bet: $" + bet);
+        saveButton.setEnabled(bet == 0);
     }
 
     private void updateCardsOnScreen() {
@@ -280,10 +283,18 @@ public class BetScreen extends JFrame implements ActionListener {
     }
 
     private void restartGame() {
-        JOptionPane.showMessageDialog(this, "Restarting game, setting balance to $1000...");
-        // You can reset balance and reload BetScreen
-        viewModel.setBalance(1000);
-        viewModel.setBetAmount(0);
+        controller.restartGame();
+        JOptionPane.showMessageDialog(this, "Game restarted! Balance: $1,000");
     }
 
+    private void checkAutoRestart() {
+        int balance = (int) viewModel.getBalance();
+        int bet =  (int) viewModel.getBetAmount();
+
+        if (balance == 0 && bet == 0) {
+            JOptionPane.showMessageDialog(this, "You lost all your money!\n" +
+                    "Please don't go to a casino in real life. Restarting with $1,000...");
+            controller.restartGame();
+        }
+    }
 }

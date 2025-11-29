@@ -27,6 +27,10 @@ public class PlaceBetAndDealController {
         interactor.clearReservedBet();
     }
 
+    public void restartGame() {
+        interactor.restartGame();
+    }
+
     public Deck getDeck() {
         return interactor.getDeck();
     }

@@ -6,6 +6,7 @@ public interface PlaceBetAndDealInputBoundary {
     void addReservedBet(double amount);
     void clearReservedBet();
     void allIn();
+    void restartGame();
     Deck getDeck();
     Dealer getDealer();
     Player getPlayer();

@@ -1,6 +1,14 @@
 package usecase.PlaceBetAndDeal;
 
 import entities.*;
+import frameworks_and_drivers.ExitRestartGame.ExitRestartGame;
+import interface_adapters.ExitRestartGame.ExitRestartGameController;
+import interface_adapters.ExitRestartGame.ExitRestartGamePresenter;
+import interface_adapters.ExitRestartGame.ExitRestartGameViewModel;
+import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
+import usecase.ExitRestartGame.ExitRestartGameDataAccess;
+import usecase.ExitRestartGame.ExitRestartGameInputData;
+import usecase.ExitRestartGame.ExitRestartGameInteractor;
 
 import java.util.List;
 
@@ -100,6 +108,15 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
         presenter.presentBetUpdated(player.getBalance(), reservedBet);
     }
 
+    @Override
+    public void restartGame() {
+        Player player = dataAccess.getPlayer();
+        player.setBalance(1000);
+        player.setCurrentBet(0);
+        reservedBet = 0;
+        presenter.presentBetUpdated(player.getBalance(), reservedBet);
+    }
+
     public Deck getDeck() {
         return dataAccess.getDeck();
     }
@@ -109,6 +126,6 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
     }
 
     public Player getPlayer() {
-        return  dataAccess.getPlayer();
+        return dataAccess.getPlayer();
     }
 }
