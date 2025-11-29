@@ -1,17 +1,17 @@
 import entities.Deck;
 import entities.Game;
 import frameworks_and_drivers.DeckApiService;
-import frameworks_and_drivers.StartGame.StartGameDataAccess;
-import frameworks_and_drivers.LoadGame.LoadGameDataAccess;
+import frameworks_and_drivers.startgame.StartGameDataAccess;
+import frameworks_and_drivers.loadsavegame.LoadGameDataAccess;
 import frameworks_and_drivers.Homepage;
-import interface_adapters.LoadGame.LoadGameController;
-import interface_adapters.LoadGame.LoadGamePresenter;
-import interface_adapters.LoadGame.LoadGameViewModel;
-import interface_adapters.StartGame.StartGameController;
-import interface_adapters.StartGame.StartGamePresenter;
-import interface_adapters.StartGame.StartGameViewModel;
-import usecase.StartGame.*;
-import usecase.LoadGame.*;
+import interface_adapters.loadsavegame.LoadGameController;
+import interface_adapters.loadsavegame.LoadGamePresenter;
+import interface_adapters.loadsavegame.LoadGameViewModel;
+import interface_adapters.startgame.StartGameController;
+import interface_adapters.startgame.StartGamePresenter;
+import interface_adapters.startgame.StartGameViewModel;
+import usecase.startgame.*;
+import usecase.loadsavegame.*;
 
 public class Main {
     public static void main(String[] args) {
