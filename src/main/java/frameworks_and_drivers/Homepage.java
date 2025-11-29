@@ -3,16 +3,16 @@ package frameworks_and_drivers;
 import javax.swing.*;
 import java.awt.*;
 
-import frameworks_and_drivers.PlaceBetAndDeal.PlaceBetAndDealDataAccess;
-import interface_adapters.LoadGame.LoadGameController;
-import interface_adapters.LoadGame.LoadGameViewModel;
-import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealController;
-import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealPresenter;
-import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
-import interface_adapters.StartGame.StartGameController;
-import interface_adapters.StartGame.StartGameViewModel;
-import usecase.PlaceBetAndDeal.*;
-import usecase.LoadGame.*;
+import frameworks_and_drivers.placebetanddeal.PlaceBetAndDealDataAccess;
+import interface_adapters.loadsavegame.LoadGameController;
+import interface_adapters.loadsavegame.LoadGameViewModel;
+import interface_adapters.placebetanddeal.PlaceBetAndDealController;
+import interface_adapters.placebetanddeal.PlaceBetAndDealPresenter;
+import interface_adapters.placebetanddeal.PlaceBetAndDealViewModel;
+import interface_adapters.startgame.StartGameController;
+import interface_adapters.startgame.StartGameViewModel;
+import usecase.placebetanddeal.*;
+import usecase.loadsavegame.*;
 import entities.*;
 
 public class Homepage extends JFrame {
