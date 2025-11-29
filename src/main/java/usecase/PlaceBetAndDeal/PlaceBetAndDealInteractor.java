@@ -1,14 +1,6 @@
 package usecase.PlaceBetAndDeal;
 
 import entities.*;
-import frameworks_and_drivers.ExitRestartGame.ExitRestartGame;
-import interface_adapters.ExitRestartGame.ExitRestartGameController;
-import interface_adapters.ExitRestartGame.ExitRestartGamePresenter;
-import interface_adapters.ExitRestartGame.ExitRestartGameViewModel;
-import interface_adapters.PlaceBetAndDeal.PlaceBetAndDealViewModel;
-import usecase.ExitRestartGame.ExitRestartGameDataAccess;
-import usecase.ExitRestartGame.ExitRestartGameInputData;
-import usecase.ExitRestartGame.ExitRestartGameInteractor;
 
 import java.util.List;
 
