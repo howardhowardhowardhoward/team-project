@@ -1,19 +1,16 @@
 package entities;
 
 public class Game {
-    private Player player;
-    private Dealer dealer;
-    private Deck gameDeck;
+    private final Player player;
+    private final Dealer dealer;
+    private final Deck gameDeck;
     private int balance;
-    private int currentBet;
-    private boolean roundActive;
 
     public Game(Deck gameDeck) {
         this.gameDeck = gameDeck;
         this.player = new Player(1000);
         this.dealer = new Dealer(gameDeck); // Dealer also has a Hand
         this.balance = 1000; // starting balance
-        this.roundActive = false;
     }
 
     public Game(Deck gameDeck, double loadedBalance) {
@@ -21,7 +18,6 @@ public class Game {
         this.player = new Player(loadedBalance);
         this.dealer = new Dealer(gameDeck);
         this.balance = (int) loadedBalance;
-        this.roundActive = false;
     }
 
     public Player getPlayer() {
@@ -40,24 +36,8 @@ public class Game {
         return gameDeck;
     }
 
-    public int getCurrentBet() {
-        return currentBet;
-    }
-
-    public boolean isRoundActive() {
-        return roundActive;
-    }
-
     public void setBalance(int balance) {
         this.balance = balance;
-    }
-
-    public void setCurrentBet(int bet) {
-        this.currentBet = bet;
-    }
-
-    public void setRoundActive(boolean active) {
-        this.roundActive = active;
     }
 
     // ============================
@@ -67,30 +47,6 @@ public class Game {
     /** Reset the table for a new round */
     public void reset() {
         player.clearHands();
-        currentBet = 0;
-        roundActive = true;
-    }
-
-    public void applyWinnings(int amount) {
-        balance += amount;
-    }
-
-    public boolean placeBet(int amount) {
-        if (amount > balance || amount <= 0) {
-            return false;
-        }
-        balance -= amount;
-        currentBet = amount;
-        return true;
-    }
-
-    // ============================
-    //       BLACKJACK CHECKS
-    // ============================
-
-    /** Check initial blackjack case for player or dealer */
-    public boolean checkInitialBlackjack() {
-        return player.isBlackjack(0) || dealer.isBlackJack();
     }
 }
 

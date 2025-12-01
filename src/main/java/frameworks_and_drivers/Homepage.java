@@ -68,11 +68,17 @@ public class Homepage extends JFrame {
 
         // Start button
         JButton startButton = new JButton("Start New Game");
+        startButton.setBackground(new Color(218, 165, 32));
+        startButton.setForeground(Color.BLACK);
+        startButton.setFont(new Font("Arial", Font.BOLD, 20));
         buttonPanel.add(startButton);
         startButton.addActionListener(e -> startNewGame());
 
         // Load saved game button
         JButton loadButton = new JButton("Load Saved Game");
+        loadButton.setBackground(new Color(218, 165, 32));
+        loadButton.setForeground(Color.BLACK);
+        loadButton.setFont(new Font("Arial", Font.BOLD, 20));
         buttonPanel.add(loadButton);
         loadButton.addActionListener(e -> loadSavedGame());
 

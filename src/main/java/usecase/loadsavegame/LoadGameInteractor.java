@@ -27,12 +27,12 @@ public class LoadGameInteractor implements LoadGameInputBoundary {
             player.setBalance(loadedBalance);
 
             Deck deck = startGameDataAccess.getDeck();
+            // Shuffle deck
+            deck.shuffleDeck();
+
             Game game = new Game(deck, loadedBalance);
             // Reset game state
             game.reset();
-
-            // Shuffle deck
-            deck.shuffleDeck();
 
             LoadGameOutputData outputData = new LoadGameOutputData(true, loadedBalance,
                     "Saved game loaded successfully");
@@ -41,7 +41,7 @@ public class LoadGameInteractor implements LoadGameInputBoundary {
             return game;
         } catch (Exception e) {
             LoadGameOutputData outputData = new LoadGameOutputData(false, 0,
-                    "Failed to load saved game");
+                    "Failed to load saved game - save not found");
 
             presenter.present(outputData);
         }
