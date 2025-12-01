@@ -20,8 +20,6 @@ The project follows Clean Architecture to ensure clear separation of concerns an
 
 ## Project Structure
 
-## Project Structure
-
 The project follows Clean Architecture, separating the code into clear layers:  
 **entities → usecase → interface_adapters → frameworks_and_drivers**.
 
