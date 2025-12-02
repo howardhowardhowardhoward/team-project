@@ -1,4 +1,4 @@
-package frameworks_and_drivers;
+ckage frameworks_and_drivers;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,6 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import frameworks_and_drivers.loadsavegame.LoadGameDataAccess;
+// Import your ExitRestart classes
+import frameworks_and_drivers.exitrestartgame.ExitRestartGame;
+import interface_adapters.exitrestartgame.ExitRestartGameController;
+import interface_adapters.exitrestartgame.ExitRestartGamePresenter;
+import usecase.exitrestartgame.ExitRestartGameInputData;
+import usecase.exitrestartgame.ExitRestartGameInteractor;
+
 import interface_adapters.dealeraction.DealerActionController;
 import interface_adapters.dealeraction.DealerActionPresenter;
 import interface_adapters.dealeraction.DealerActionViewModel;
@@ -21,6 +28,9 @@ import usecase.dealeraction.*;
 public class BetScreen extends JFrame implements ActionListener {
     private final PlaceBetAndDealController controller;
     private final PlaceBetAndDealViewModel viewModel;
+    
+    // Add reference to your ExitRestartGameController
+    private final ExitRestartGameController exitRestartController;
 
     private final JLabel balanceLabel;
     private final JLabel betLabel;
@@ -38,6 +48,18 @@ public class BetScreen extends JFrame implements ActionListener {
     public BetScreen(PlaceBetAndDealController controller, PlaceBetAndDealViewModel viewModel) {
         this.controller = controller;
         this.viewModel = viewModel;
+
+        // --- Wiring up the Exit/Restart Use Case locally ---
+        // This ensures the Interactor is used and linked to the UI.
+        ExitRestartGame exitDataAccess = new ExitRestartGame(
+            controller.getPlayer(), 
+            controller.getDeck(), 
+            controller.getDealer()
+        );
+        ExitRestartGamePresenter exitPresenter = new ExitRestartGamePresenter(viewModel);
+        ExitRestartGameInteractor exitInteractor = new ExitRestartGameInteractor(exitPresenter, exitDataAccess);
+        this.exitRestartController = new ExitRestartGameController(exitInteractor);
+        // ---------------------------------------------------
 
         setTitle("Game Screen");
         setSize(1200, 800);
@@ -85,7 +107,7 @@ public class BetScreen extends JFrame implements ActionListener {
 
         backgroundPanel.add(tablePanel, BorderLayout.CENTER);
 
-        // chips; tentative, currently JButtons. Replace with actual chips if possible
+        // chips
         JPanel chipsPanel = new JPanel();
         chipsPanel.setOpaque(false);
         chipsPanel.setLayout(new GridLayout(4, 2, 10, 10));
@@ -130,13 +152,15 @@ public class BetScreen extends JFrame implements ActionListener {
 
         restartButton = new JButton("Restart");
         restartButton.setFont(new Font("Arial", Font.BOLD, 20));
-        restartButton.addActionListener(e -> restartGame());
+        // Use YOUR controller here
+        restartButton.addActionListener(e -> performRestart());
         restartButton.setBackground(Color.GRAY);
         bottomButtonPanel.add(restartButton);
 
         exitButton = new JButton("Exit");
         exitButton.setFont(new Font("Arial", Font.BOLD, 20));
-        exitButton.addActionListener(e -> System.exit(0));
+        // Use YOUR controller here
+        exitButton.addActionListener(e -> performExit());
         exitButton.setBackground(Color.RED);
         bottomButtonPanel.add(exitButton);
 
@@ -182,7 +206,6 @@ public class BetScreen extends JFrame implements ActionListener {
 
 
         PlayerActionViewModel paViewModel = new PlayerActionViewModel();
-        // populate with initial cards
         paViewModel.setPlayerCardImages(viewModel.getPlayerCardImages());
         paViewModel.setDealerCardImages(viewModel.getDealerCardImages());
         paViewModel.setPlayerTotal(viewModel.getPlayerTotal());
@@ -207,21 +230,11 @@ public class BetScreen extends JFrame implements ActionListener {
         JButton button = new JButton(label);
         button.setFont(new Font("Arial", Font.BOLD, 20));
         button.addActionListener(e -> controller.addChip(value));
-        if (value == 1) {
-            button.setBackground(Color.WHITE);
-        }
-        else if (value == 5) {
-            button.setBackground(Color.RED);
-        }
-        else if (value == 10) {
-            button.setBackground(new Color(1, 150, 255));
-        }
-        else if (value == 25) {
-            button.setBackground(Color.GREEN);
-        }
-        else if (value == 50) {
-            button.setBackground(new Color(255, 140, 0));
-        }
+        if (value == 1) button.setBackground(Color.WHITE);
+        else if (value == 5) button.setBackground(Color.RED);
+        else if (value == 10) button.setBackground(new Color(1, 150, 255));
+        else if (value == 25) button.setBackground(Color.GREEN);
+        else if (value == 50) button.setBackground(new Color(255, 140, 0));
         else if (value == 100) {
             button.setBackground(Color.BLACK);
             button.setForeground(Color.WHITE);
@@ -230,9 +243,7 @@ public class BetScreen extends JFrame implements ActionListener {
             button.setBackground(new Color(75, 0, 100));
             button.setForeground(Color.WHITE);
         }
-        else {  // value == 1000
-            button.setBackground(new Color(218, 165, 32));
-        }
+        else button.setBackground(new Color(218, 165, 32));
         return button;
     }
 
@@ -250,11 +261,9 @@ public class BetScreen extends JFrame implements ActionListener {
     private void updateCardsOnScreen() {
         playerCardsPanel.removeAll();
         dealerCardsPanel.removeAll();
-        // player cards
         for (String url : viewModel.getPlayerCardImages()) {
             playerCardsPanel.add(createCardImageLabel(url));
         }
-        // dealer
         for (String url : viewModel.getDealerCardImages()) {
             dealerCardsPanel.add(createCardImageLabel(url));
         }
@@ -266,7 +275,7 @@ public class BetScreen extends JFrame implements ActionListener {
 
     private JLabel createCardImageLabel(String url) {
         try {
-            ImageIcon icon = new ImageIcon(new java.net.URL(url)); // using internet
+            ImageIcon icon = new ImageIcon(new java.net.URL(url));
             Image image = icon.getImage().getScaledInstance(120, 175, Image.SCALE_SMOOTH);
             return new JLabel(new ImageIcon(image));
         } catch (Exception e) {
@@ -276,15 +285,26 @@ public class BetScreen extends JFrame implements ActionListener {
 
     private void saveGame() {
         double currentBalance = viewModel.getBalance();
-        LoadGameDataAccess dataAccess = new LoadGameDataAccess(); //  JSON helper
+        LoadGameDataAccess dataAccess = new LoadGameDataAccess();
         dataAccess.saveBalance(currentBalance);
         JOptionPane.showMessageDialog(this,
                 "Game saved! Current balance: $" + (int) currentBalance);
     }
 
-    private void restartGame() {
-        controller.restartGame();
+    // --- New Method using ExitRestartGameController ---
+    private void performRestart() {
+        ExitRestartGameInputData inputData = new ExitRestartGameInputData();
+        exitRestartController.handleRestartGame(inputData);
+        // The View (this screen) updates via ViewModel property changes, 
+        // OR we can show a confirmation here if the presenter/viewmodel wiring isn't updating immediate UI
         JOptionPane.showMessageDialog(this, "Game restarted! Balance: $1,000");
+    }
+
+    // --- New Method using ExitRestartGameController ---
+    private void performExit() {
+        ExitRestartGameInputData inputData = new ExitRestartGameInputData();
+        exitRestartController.handleExitGame(inputData);
+        System.exit(0);
     }
 
     private void checkAutoRestart() {
@@ -294,7 +314,7 @@ public class BetScreen extends JFrame implements ActionListener {
         if (balance == 0 && bet == 0) {
             JOptionPane.showMessageDialog(this, "You lost all your money!\n" +
                     "Please don't go to a casino in real life. Restarting with $1,000...");
-            controller.restartGame();
+            performRestart(); // Use the new controller here too
         }
     }
 }
