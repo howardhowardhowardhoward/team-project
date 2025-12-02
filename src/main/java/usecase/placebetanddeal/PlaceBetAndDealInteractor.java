@@ -33,6 +33,7 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
             // Reset hands
             player.clearHands();
             dealer.getHand().clear();
+            player.setInsurance(false);
 
             // Draw cards
             List<Card> playerCards = deck.drawCards(2);
@@ -106,6 +107,7 @@ public class PlaceBetAndDealInteractor implements PlaceBetAndDealInputBoundary {
         player.setBalance(1000);
         player.setCurrentBet(0);
         reservedBet = 0;
+        player.setInsurance(false);
         presenter.presentBetUpdated(player.getBalance(), reservedBet);
     }
 
