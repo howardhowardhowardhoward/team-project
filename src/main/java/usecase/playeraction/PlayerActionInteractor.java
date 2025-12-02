@@ -149,9 +149,97 @@ public class PlayerActionInteractor implements PlayerActionInputBoundary {
 
     @Override
     public void insurance() {
-        // TODO: implement insurance
-        presenter.presentError("Insurance not implemented yet");
+        try {
+            // insurance
+            if (player.hasInsurance()) {
+                presenter.presentError("Insurance already purchased for this round");
+                return;
+            }
+
+            // dealer upcard
+            List<Card> dealerCards = dealer.getHand().getCards();
+            if (dealerCards.isEmpty()) {
+                presenter.presentError("Cannot take insurance - dealer has no cards");
+                return;
+            }
+
+            Card dealerUpCard = dealerCards.get(1);
+            if (!dealerUpCard.getRank().equalsIgnoreCase("ACE")) {
+                presenter.presentError("Insurance only available when dealer shows Ace");
+                return;
+            }
+
+            double originalBet = player.getCurrentBet();
+            double insuranceBet = originalBet / 2.0;
+            double balance = player.getBalance();
+
+            if (balance < insuranceBet) {
+                presenter.presentError(String.format(
+                        "Insufficient balance for insurance. Need $%.2f, have $%.2f",
+                        insuranceBet, balance
+                ));
+                return;
+            }
+
+            // insurance
+            player.setInsurance(true);
+            player.setBalance(balance - insuranceBet);
+
+            // dealer blackjack
+            Hand dealerHand = dealer.getHand();
+            boolean dealerBlackjack = dealerHand.isBlackjack();
+
+            String message;
+            double newBalance;
+
+            if (dealerBlackjack) {
+                double payout = insuranceBet * 3.0;
+                newBalance = player.getBalance() + payout;
+                player.setBalance(newBalance);
+                message = String.format(
+                        "Insurance wins! Dealer has Blackjack. Won $%.2f",
+                        payout - insuranceBet
+                );
+            } else {
+                newBalance = player.getBalance();
+                message = String.format(
+                        "Insurance loses. Dealer does not have Blackjack. Lost $%.2f",
+                        insuranceBet
+                );
+            }
+
+            Hand playerHand = player.getHand(0);
+            int dealerVisibleTotal = dealerCards.get(1).getValue();
+
+            List<String> playerImages = new ArrayList<>();
+            for (Card c : playerHand.getCards()) {
+                playerImages.add(c.getImage());
+            }
+
+            PlayerActionOutputData outputData = new PlayerActionOutputData(
+                    playerImages,
+                    null,
+                    playerHand.getTotalPoints(),
+                    dealerVisibleTotal,
+                    playerHand.isBust(),
+                    playerHand.isBlackjack(),
+                    dealerBlackjack,
+                    newBalance,
+                    originalBet
+            );
+
+            presenter.present(outputData);
+
+            if (dealerBlackjack) {
+                handleRoundResult();
+            }
+
+        } catch (Exception e) {
+            presenter.presentError("Error during insurance: " + e.getMessage());
+        }
+        //presenter.presentError("Insurance not implemented yet");
     }
+
 
     @Override
     public void handleRoundResult() {

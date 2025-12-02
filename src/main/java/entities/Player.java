@@ -62,4 +62,15 @@ public class Player {
     public void setCurrentBet(double amount) {
         this.currentBet = amount;
     }
+
+    // Check Insurance
+    private boolean hasInsurance = false;
+
+    public boolean hasInsurance() {
+        return hasInsurance;
+    }
+
+    public void setInsurance(boolean insurance) {
+        this.hasInsurance = insurance;
+    }
 }
