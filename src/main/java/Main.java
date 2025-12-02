@@ -20,13 +20,13 @@ public class Main {
         DeckApiService api = new DeckApiService();
         Deck deck = new Deck(api);
         Game game = new Game(deck);
-        StartGameDataAccess startGameDataAccess = new StartGameDataAccess(deck, game);
+        StartGameDataAccessInterface startGameDataAccess = new StartGameDataAccess(deck, game);
         StartGameInteractor startGameInteractor = new StartGameInteractor(startGamePresenter,
                 startGameDataAccess);
         StartGameController startGameController = new StartGameController(startGameInteractor);
         LoadGameViewModel loadGameViewModel = new LoadGameViewModel();
         LoadGamePresenter loadGamePresenter = new LoadGamePresenter(loadGameViewModel);
-        LoadGameDataAccess jsonPlayerDataAccess = new LoadGameDataAccess();
+        LoadGameDataAccessInterface jsonPlayerDataAccess = new LoadGameDataAccess();
         LoadGameInteractor loadGameInteractor = new LoadGameInteractor(jsonPlayerDataAccess,
                 startGameDataAccess, loadGamePresenter);
         LoadGameController loadGameController = new LoadGameController(loadGameInteractor);
